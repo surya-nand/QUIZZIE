@@ -1,6 +1,8 @@
 import React from "react";
 import { useState } from "react";
 import axios from 'axios';
+import "./../Homepage/homepage.modules.css"
+const BASE_URL = 'http://localhost:5000'
 
 // const [loginActive, setLoginActive] = useState(false);
 
@@ -18,10 +20,17 @@ function Homepage() {
 
   const handleRegisterInputChange = (event) => {
     const { name, value } = event.target;
-    setRegisterData((prevState) => ({
-      ...prevState,
-      [name]: value,
-    }));
+    if (name === 'confirmpassword') {
+      setRegisterData((prevState) => ({
+        ...prevState,
+        confirmpassword: value,
+      }));
+    } else {
+      setRegisterData((prevState) => ({
+        ...prevState,
+        [name]: value,
+      }));
+    }
   };
   const handleLoginInputChange = (event) => {
     const { name, value } = event.target;
@@ -44,19 +53,38 @@ function Homepage() {
 
   const [signupActive, setSignupActive] = useState(true);
 
-  const handleLoginFormSubmit = (event) => {
+  const handleLoginFormSubmit = async(event) => {
     event.preventDefault();
-
+    try{
+      const response = await axios.post(`${BASE_URL}/api/login`,loginData)
+      console.log(response.data);
+    }
+    catch(error){
+      console.log(error);
+    }
   }
 
+  const handleRegisterFormSubmit = async(event) => {
+    event.preventDefault();
+    try{
+      const response = await axios.post(`${BASE_URL}/api/register`,registerData)
+      console.log(response.data);
+      console.log(registerData)
+    }
+    catch(error){
+      console.log(error);
+    }
+    
+  }
   return (
+    <div className="homepage-container">
     <div className="homepage">
       <div className="app-title">
         <h1>QUIZZIE</h1>
       </div>
       <div className="login-signup-buttons">
-        <button onClick={handleSignupActiveButton}>Sign Up</button>
-        <button onClick={handleLoginActiveButton}>Log In</button>
+        <button className={`signup-button ${signupActive?'active': ''}`} onClick={handleSignupActiveButton}>Sign Up</button>
+        <button className={`login-button ${!signupActive?'active': ''}`} onClick={handleLoginActiveButton}>Log In</button>
       </div>
       <div className="user-details">
         {signupActive ? (
@@ -82,7 +110,7 @@ function Homepage() {
                   onChange={handleRegisterInputChange}
                 ></input>
               </div>
-              <div className="username-password">
+              <div className="password-input">
                 <p>Password</p>
                 <input
                   className="user-password"
@@ -92,7 +120,7 @@ function Homepage() {
                   onChange={handleRegisterInputChange}
                 ></input>
               </div>
-              <div className="username-confirm-password">
+              <div className="confirm-password-input">
                 <p>Confirm Password</p>
                 <input
                   className="user-confirm-password"
@@ -104,7 +132,7 @@ function Homepage() {
               </div>
               <button
               type="submit"
-              className="signup-button"
+              className="signup-submit-button"
               >
                 Sign up
               </button>
@@ -123,7 +151,7 @@ function Homepage() {
                   onChange={handleLoginInputChange}
                 ></input>
               </div>
-              <div className="username-password">
+              <div className="password-input">
                 <p>Password</p>
                 <input
                   className="user-password"
@@ -135,7 +163,7 @@ function Homepage() {
               </div>
               <button
               type="submit"
-              className="login-button"
+              className="login-submit-button"
               >
                 Log In
               </button>
@@ -143,6 +171,7 @@ function Homepage() {
           </form>
         )}
       </div>
+    </div>
     </div>
   );
 }
