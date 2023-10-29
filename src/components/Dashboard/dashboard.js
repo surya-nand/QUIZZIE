@@ -7,7 +7,7 @@ function Dashboard() {
   const [isCreateQuizFormOpen, setIsCreateQuizFormOpen] = useState(false);
   const [isQuizQuestiontype, setIsQuizQuestionType] = useState(false);
   const [isQuizPollType, setIsQuizPollType] = useState(false);
-  const [isQuestionQuizFormOpen, setISQuestionQuizFormOpen] = useState(false);
+  const [isQuestionQuizFormOpen, setISQuestionQuizFormOpen] = useState(true);
   const [isPollQuizFormOpen, setIsPollQuizFormOpen] = useState(false);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [currentOptionIndex, setCurrentOptionIndex] = useState(0);
@@ -161,8 +161,12 @@ function Dashboard() {
   //
 
   const handleCloseQuestionQuizForm = (e) => {
-     e.preventDefault(); 
-  
+     e.preventDefault();
+     setISQuestionQuizFormOpen(false) 
+  }
+
+  const handleCreateQuestionQuizFormSubmit = (e) => {
+    e.preventDefault()
   }
 
   return (
@@ -238,11 +242,12 @@ function Dashboard() {
                   <>
                     <button
                       key={index}
+                      className={`question-number-div ${index === 0 ? "first-question" : ""} ${index === currentQuestionIndex? 'active-question' : ''}`}
                       onClick={(e) => handleActiveQuestionClick(e, index)}
                     >
                       {index + 1}
                     </button>
-                    {questions.length > 2 && index >= 1 && (
+                    {questions.length >= 2 && index >= 1 && (
                       <div
                         onClick={(e) => handleRemoveQuestion(index)}
                         className="question-remove-symbol"
@@ -253,9 +258,10 @@ function Dashboard() {
                   </>
                 ))}
                 {questions.length < 5 && <p onClick={handleAddQuestion}>+</p>}
-                <p>Max 5questions</p>
+                <p className="max-5-questions-message">Max 5 Questions</p>
               </div>
               <input
+                className="quiz-question-input-div"
                 placeholder={`Question ${currentQuestionIndex + 1}`}
                 value={questions[currentQuestionIndex].question}
                 type="text"
@@ -270,10 +276,11 @@ function Dashboard() {
                 required
               ></input>
               <div className="question-options-type">
-                <p>Option Type</p>
+                <p className="option-type-text">Option Type</p>
                 <form>
-                  <div>
-                    <label>
+                  <div className="different-option-types">
+                  <div  className="each-option-with-label">
+                    <label className="option-type-text">
                       <input
                         type="radio"
                         value="text"
@@ -282,11 +289,11 @@ function Dashboard() {
                           handleSelectedQuizOptionsFormatChange("text")
                         }
                       ></input>
-                      Text
+                      <p>Text</p>
                     </label>
                   </div>
-                  <div>
-                    <label>
+                  <div className="each-option-with-label">
+                    <label className="option-type-text">
                       <input
                         type="radio"
                         value="ImageURL"
@@ -295,11 +302,11 @@ function Dashboard() {
                           handleSelectedQuizOptionsFormatChange("ImageURL")
                         }
                       ></input>
-                      Image URL
+                      <p className="image-url-text">Image URL</p>
                     </label>
                   </div>
-                  <div>
-                    <label>
+                  <div className="each-option-with-label">
+                    <label className="option-type-text">
                       <input
                         type="radio"
                         value="TextnImage"
@@ -308,8 +315,9 @@ function Dashboard() {
                           handleSelectedQuizOptionsFormatChange("TextnImage")
                         }
                       ></input>
-                      Text & Image URL
+                      <p className="image-url-text">Text & Image URL</p>
                     </label>
+                  </div>
                   </div>
                 </form>
               </div>
@@ -319,10 +327,30 @@ function Dashboard() {
                   <>
                     {questions[currentQuestionIndex].options.map(
                       (option, optionIndex) => (
-                        <div key={optionIndex}>
-                          <label>
+                        <div key={optionIndex} className="question-options-div">
+                          
+                          <input
+                              type="radio"
+                              className="options-input-radio-div"
+                              checked={
+                                questions[currentQuestionIndex]
+                                  .correctAnswer ===
+                                (selectedQuizOptionsFormat === "text"
+                                  ? option.text
+                                  : option.imageURL)
+                              }
+                              onChange={() =>
+                                handleSelectCorrectAnswer(
+                                  currentQuestionIndex,
+                                  selectedQuizOptionsFormat === "text"
+                                    ? option.text
+                                    : option.imageURL
+                                )
+                              }
+                            ></input>
                             <input
                               type="text"
+                              className="options-input-div"
                               placeholder={
                                 selectedQuizOptionsFormat === "text"
                                   ? "Text"
@@ -344,25 +372,8 @@ function Dashboard() {
                                 )
                               }
                             ></input>
-                            <input
-                              type="radio"
-                              checked={
-                                questions[currentQuestionIndex]
-                                  .correctAnswer ===
-                                (selectedQuizOptionsFormat === "text"
-                                  ? option.text
-                                  : option.imageURL)
-                              }
-                              onChange={() =>
-                                handleSelectCorrectAnswer(
-                                  currentQuestionIndex,
-                                  selectedQuizOptionsFormat === "text"
-                                    ? option.text
-                                    : option.imageURL
-                                )
-                              }
-                            ></input>
-                          </label>
+                            
+                  
                           {questions[currentQuestionIndex].options.length > 2 &&
                             optionIndex > 1 && (
                               <button
@@ -452,18 +463,20 @@ function Dashboard() {
                 )}
               </div>
               {questions[currentQuestionIndex].options.length < 4 && (
-                <button onClick={() => handleAddOption(currentQuestionIndex)}>
+                <button 
+                className="add-option-button"
+                onClick={() => handleAddOption(currentQuestionIndex)}>
                   Add option
                 </button>
               )}
               <div className="quiz-each-question-timer">
                 <p>Timer</p>
                 <button>OFF</button>
-                <button onclick = {(e) => handleQuestionTimerClick(currentQuestionIndex,5)}>5 SEC</button>
+                <button onClick = {(e) => handleQuestionTimerClick(currentQuestionIndex,5)}>5 SEC</button>
                 <button onClick={(e) => handleQuestionTimerClick(currentQuestionIndex,10)}>10 SEC</button>
               </div>
               <div className="cancel-create-quiz-buttons">
-                <button onclick={handleCloseQuestionQuizForm}>Cancel</button>
+                <button onClick={handleCloseQuestionQuizForm}>Cancel</button>
                 <button onClick={handleCreateQuestionQuizFormSubmit}>Create Quiz</button>
               </div>
             </div>
