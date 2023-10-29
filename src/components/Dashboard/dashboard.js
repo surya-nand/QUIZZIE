@@ -1,7 +1,9 @@
 import React from "react";
-import { useState, useCallback } from "react";
+import { useState} from "react";
 import "./../Dashboard/dashboard.modules.css";
 import closeSymbol from "../../Assets/charm_cross.png";
+import plusSymbol from '../../Assets/plusSymbol.png';
+import deleteSymbol from '../../Assets/deleteSymbol.png';
 
 function Dashboard() {
   const [isCreateQuizFormOpen, setIsCreateQuizFormOpen] = useState(false);
@@ -10,7 +12,6 @@ function Dashboard() {
   const [isQuestionQuizFormOpen, setISQuestionQuizFormOpen] = useState(true);
   const [isPollQuizFormOpen, setIsPollQuizFormOpen] = useState(false);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
-  const [currentOptionIndex, setCurrentOptionIndex] = useState(0);
   const [quizName, setQuizName] = useState({
     quizName: "",
   });
@@ -58,12 +59,11 @@ function Dashboard() {
 
   //handling functions at creating questions for quiz
 
-  const [selectedQuizOptionsFormat, setSelectedQuizOptionsFormat] =
-    useState("");
-
-  const handleSelectedQuizOptionsFormatChange = useCallback((optionType) => {
-    setSelectedQuizOptionsFormat(optionType);
-  }, []);
+  const handleSelectedQuizOptionsFormatChange = (index, optionType) => {
+    const updatedQuestions = [...questions];
+    updatedQuestions[index].optionFormat = optionType;
+    setQuestions(updatedQuestions);
+  };
 
   const handleActiveQuestionClick = (e, index) => {
     e.preventDefault();
@@ -81,18 +81,22 @@ function Dashboard() {
       options: [
         { text: "", imageURL: "" },
         { text: "", imageURL: "" },
+        { text: "", imageURL: "" },
       ],
       correctAnswer: null,
       timer: null,
+      optionFormat: "text",
     },
     {
       question: "",
       options: [
         { text: "", imageURL: "" },
         { text: "", imageURL: "" },
+        { text: "", imageURL: "" },
       ],
       correctAnswer: null,
       timer: null,
+      optionFormat: "text",
     },
   ]);
 
@@ -102,9 +106,10 @@ function Dashboard() {
         ...prevQuestions,
         {
           question: "",
-          options: [{ text: "", imageURL: "" }],
+          options: [{ text: "", imageURL: "" },{ text: "", imageURL: "" },{ text: "", imageURL: "" }],
           correctAnswer: null,
           timer: null,
+          optionFormat: "text",
         },
       ]);
     } else {
@@ -153,21 +158,21 @@ function Dashboard() {
     setQuestions(updatedQuestions);
   };
 
-  const handleQuestionTimerClick = (index,timeInSeconds) => {
+  const handleQuestionTimerClick = (index, timeInSeconds) => {
     const updatedQuestions = [...questions];
     updatedQuestions[index].timer = timeInSeconds;
-    setQuestions(updatedQuestions)
-  }
+    setQuestions(updatedQuestions);
+  };
   //
 
   const handleCloseQuestionQuizForm = (e) => {
-     e.preventDefault();
-     setISQuestionQuizFormOpen(false) 
-  }
+    e.preventDefault();
+    setISQuestionQuizFormOpen(false);
+  };
 
   const handleCreateQuestionQuizFormSubmit = (e) => {
-    e.preventDefault()
-  }
+    e.preventDefault();
+  };
 
   return (
     <div className="dashboard-page">
@@ -242,7 +247,11 @@ function Dashboard() {
                   <>
                     <button
                       key={index}
-                      className={`question-number-div ${index === 0 ? "first-question" : ""} ${index === currentQuestionIndex? 'active-question' : ''}`}
+                      className={`question-number-div ${
+                        index === 0 ? "first-question" : ""
+                      } ${
+                        index === currentQuestionIndex ? "active-question" : ""
+                      }`}
                       onClick={(e) => handleActiveQuestionClick(e, index)}
                     >
                       {index + 1}
@@ -257,7 +266,10 @@ function Dashboard() {
                     )}
                   </>
                 ))}
-                {questions.length < 5 && <p onClick={handleAddQuestion}>+</p>}
+                {questions.length < 5 && <img 
+                src={plusSymbol}
+                alt="plus-symbol"
+                className="add-question-symbol" onClick={handleAddQuestion}></img>}
                 <p className="max-5-questions-message">Max 5 Questions</p>
               </div>
               <input
@@ -279,104 +291,120 @@ function Dashboard() {
                 <p className="option-type-text">Option Type</p>
                 <form>
                   <div className="different-option-types">
-                  <div  className="each-option-with-label">
-                    <label className="option-type-text">
-                      <input
-                        type="radio"
-                        value="text"
-                        checked={selectedQuizOptionsFormat === "text"}
-                        onChange={() =>
-                          handleSelectedQuizOptionsFormatChange("text")
-                        }
-                      ></input>
-                      <p>Text</p>
-                    </label>
-                  </div>
-                  <div className="each-option-with-label">
-                    <label className="option-type-text">
-                      <input
-                        type="radio"
-                        value="ImageURL"
-                        checked={selectedQuizOptionsFormat === "ImageURL"}
-                        onChange={() =>
-                          handleSelectedQuizOptionsFormatChange("ImageURL")
-                        }
-                      ></input>
-                      <p className="image-url-text">Image URL</p>
-                    </label>
-                  </div>
-                  <div className="each-option-with-label">
-                    <label className="option-type-text">
-                      <input
-                        type="radio"
-                        value="TextnImage"
-                        checked={selectedQuizOptionsFormat === "TextnImage"}
-                        onChange={() =>
-                          handleSelectedQuizOptionsFormatChange("TextnImage")
-                        }
-                      ></input>
-                      <p className="image-url-text">Text & Image URL</p>
-                    </label>
-                  </div>
+                    <div className="each-option-with-label">
+                      <label className="option-type-text">
+                        <input
+                          type="radio"
+                          value="text"
+                          checked={
+                            questions[currentQuestionIndex].optionFormat ===
+                            "text"
+                          }
+                          onChange={() =>
+                            handleSelectedQuizOptionsFormatChange(
+                              currentQuestionIndex,
+                              "text"
+                            )
+                          }
+                        ></input>
+                        <p>Text</p>
+                      </label>
+                    </div>
+                    <div className="each-option-with-label">
+                      <label className="option-type-text">
+                        <input
+                          type="radio"
+                          value="ImageURL"
+                          checked={
+                            questions[currentQuestionIndex].optionFormat ===
+                            "ImageURL"
+                          }
+                          onChange={() =>
+                            handleSelectedQuizOptionsFormatChange(
+                              currentQuestionIndex,
+                              "ImageURL"
+                            )
+                          }
+                        ></input>
+                        <p className="image-url-text">Image URL</p>
+                      </label>
+                    </div>
+                    <div className="each-option-with-label">
+                      <label className="option-type-text">
+                        <input
+                          type="radio"
+                          value="TextnImage"
+                          checked={
+                            questions[currentQuestionIndex].optionFormat ===
+                            "TextnImage"
+                          }
+                          onChange={() =>
+                            handleSelectedQuizOptionsFormatChange(
+                              currentQuestionIndex,
+                              "TextnImage"
+                            )
+                          }
+                        ></input>
+                        <p className="image-url-text">Text & Image URL</p>
+                      </label>
+                    </div>
                   </div>
                 </form>
               </div>
               <div className="quiz-answer-inputs">
-                {selectedQuizOptionsFormat === "text" ||
-                selectedQuizOptionsFormat === "ImageURL" ? (
+                {questions[currentQuestionIndex].optionFormat === "text" ||
+                questions[currentQuestionIndex].optionFormat === "ImageURL" ? (
                   <>
                     {questions[currentQuestionIndex].options.map(
                       (option, optionIndex) => (
                         <div key={optionIndex} className="question-options-div">
-                          
                           <input
-                              type="radio"
-                              className="options-input-radio-div"
-                              checked={
-                                questions[currentQuestionIndex]
-                                  .correctAnswer ===
-                                (selectedQuizOptionsFormat === "text"
-                                  ? option.text
-                                  : option.imageURL)
-                              }
-                              onChange={() =>
-                                handleSelectCorrectAnswer(
-                                  currentQuestionIndex,
-                                  selectedQuizOptionsFormat === "text"
-                                    ? option.text
-                                    : option.imageURL
-                                )
-                              }
-                            ></input>
-                            <input
-                              type="text"
-                              className="options-input-div"
-                              placeholder={
-                                selectedQuizOptionsFormat === "text"
-                                  ? "Text"
-                                  : "Image URL"
-                              }
-                              value={
-                                selectedQuizOptionsFormat === "text"
+                            type="radio"
+                            className="options-input-radio-div"
+                            checked={
+                              questions[currentQuestionIndex].correctAnswer ===
+                              (questions[currentQuestionIndex].optionFormat === "text"
+                                ? option.text
+                                : option.imageURL)
+                            }
+                            onChange={() =>
+                              handleSelectCorrectAnswer(
+                                currentQuestionIndex,
+                                questions[currentQuestionIndex].optionFormat === "text"
                                   ? option.text
                                   : option.imageURL
-                              }
-                              onChange={(e) =>
-                                handleOptionInputChange(
-                                  currentQuestionIndex,
-                                  optionIndex,
-                                  selectedQuizOptionsFormat === "text"
-                                    ? "text"
-                                    : "imageURL",
-                                  e.target.value
-                                )
-                              }
-                            ></input>
-                            
-                  
+                              )
+                            }
+                          ></input>
+                          <input
+                            type="text"
+                            className="options-input-div"
+                            placeholder={
+                              questions[currentQuestionIndex].optionFormat === "text"
+                                ? "Text"
+                                : "Image URL"
+                            }
+                            value={
+                              questions[currentQuestionIndex].optionFormat === "text"
+                                ? option.text
+                                : option.imageURL
+                            }
+                            onChange={(e) =>
+                              handleOptionInputChange(
+                                currentQuestionIndex,
+                                optionIndex,
+                                questions[currentQuestionIndex].optionFormat === "text"
+                                  ? "text"
+                                  : "imageURL",
+                                e.target.value
+                              )
+                            }
+                          ></input>
+
                           {questions[currentQuestionIndex].options.length > 2 &&
                             optionIndex > 1 && (
                               <button
+                              className="delete-symbol-button"
                                 onClick={() =>
                                   handleRemoveOption(
                                     currentQuestionIndex,
@@ -384,7 +412,11 @@ function Dashboard() {
                                   )
                                 }
                               >
-                                Remove
+                                <img
+                                alt="delete-symbol"
+                                
+                                src={deleteSymbol}>
+                                </img>
                               </button>
                             )}
                         </div>
@@ -394,40 +426,15 @@ function Dashboard() {
                 ) : (
                   <></>
                 )}
-                {selectedQuizOptionsFormat === "TextnImage" ? (
+                {questions[currentQuestionIndex].optionFormat ===
+                "TextnImage" ? (
                   <>
                     {questions[currentQuestionIndex].options.map(
                       (option, optionIndex) => (
-                        <div key={optionIndex}>
-                          <label>
-                            <input
-                              type="text"
-                              placeholder="Text"
-                              value={option.text}
-                              onChange={(e) =>
-                                handleOptionInputChange(
-                                  currentQuestionIndex,
-                                  optionIndex,
-                                  "text",
-                                  e.target.value
-                                )
-                              }
-                            ></input>
-                            <input
-                              type="text"
-                              placeholder="Image URL"
-                              value={option.imageURL}
-                              onChange={(e) =>
-                                handleOptionInputChange(
-                                  currentQuestionIndex,
-                                  optionIndex,
-                                  "imageURL",
-                                  e.target.value
-                                )
-                              }
-                            ></input>
+                        <div key={optionIndex} className="question-options-div">
                             <input
                               type="radio"
+                              className="options-input-radio-div"
                               checked={
                                 questions[currentQuestionIndex]
                                   .correctAnswer ===
@@ -440,10 +447,40 @@ function Dashboard() {
                                 )
                               }
                             ></input>
-                          </label>
+                            <input
+                              type="text"
+                              placeholder="Text"
+                              className="options-input-div"
+                              value={option.text}
+                              onChange={(e) =>
+                                handleOptionInputChange(
+                                  currentQuestionIndex,
+                                  optionIndex,
+                                  "text",
+                                  e.target.value
+                                )
+                              }
+                            ></input>
+                            <input
+                              type="text"
+                              className="options-input-div"
+                              placeholder="Image URL"
+                              value={option.imageURL}
+                              onChange={(e) =>
+                                handleOptionInputChange(
+                                  currentQuestionIndex,
+                                  optionIndex,
+                                  "imageURL",
+                                  e.target.value
+                                )
+                              }
+                            ></input>
+                            
+                      
                           {questions[currentQuestionIndex].options.length > 2 &&
                             optionIndex > 1 && (
                               <button
+                              className="delete-symbol-button"
                                 onClick={() =>
                                   handleRemoveOption(
                                     currentQuestionIndex,
@@ -451,7 +488,11 @@ function Dashboard() {
                                   )
                                 }
                               >
-                                Remove
+                                <img
+                                alt="delete-symbol"
+                                
+                                src={deleteSymbol}>
+                                </img>
                               </button>
                             )}
                         </div>
@@ -463,21 +504,53 @@ function Dashboard() {
                 )}
               </div>
               {questions[currentQuestionIndex].options.length < 4 && (
-                <button 
-                className="add-option-button"
-                onClick={() => handleAddOption(currentQuestionIndex)}>
+                <button
+                  className="add-option-button"
+                  onClick={() => handleAddOption(currentQuestionIndex)}
+                >
                   Add option
                 </button>
               )}
               <div className="quiz-each-question-timer">
                 <p>Timer</p>
-                <button>OFF</button>
-                <button onClick = {(e) => handleQuestionTimerClick(currentQuestionIndex,5)}>5 SEC</button>
-                <button onClick={(e) => handleQuestionTimerClick(currentQuestionIndex,10)}>10 SEC</button>
+                <button
+                  className={
+                    questions[currentQuestionIndex].timer === null
+                      ? "active"
+                      : ""
+                  }
+                  onClick={(e) =>
+                    handleQuestionTimerClick(currentQuestionIndex, null)
+                  }
+                >
+                  OFF
+                </button>
+                <button
+                  className={
+                    questions[currentQuestionIndex].timer === 5 ? "active" : ""
+                  }
+                  onClick={(e) =>
+                    handleQuestionTimerClick(currentQuestionIndex, 5)
+                  }
+                >
+                  5 sec
+                </button>
+                <button
+                  className={
+                    questions[currentQuestionIndex].timer === 10 ? "active" : ""
+                  }
+                  onClick={(e) =>
+                    handleQuestionTimerClick(currentQuestionIndex, 10)
+                  }
+                >
+                  10 sec
+                </button>
               </div>
               <div className="cancel-create-quiz-buttons">
-                <button onClick={handleCloseQuestionQuizForm}>Cancel</button>
-                <button onClick={handleCreateQuestionQuizFormSubmit}>Create Quiz</button>
+                <button className="cancel-question-form-button" onClick={handleCloseQuestionQuizForm}>Cancel</button>
+                <button className="create-question-form-button" onClick={handleCreateQuestionQuizFormSubmit}>
+                  Create Quiz
+                </button>
               </div>
             </div>
           </div>
