@@ -1,20 +1,30 @@
 import React from "react";
-import { useState} from "react";
+import { useState } from "react";
 import "./../Dashboard/dashboard.modules.css";
 import closeSymbol from "../../Assets/charm_cross.png";
-import plusSymbol from '../../Assets/plusSymbol.png';
-import deleteSymbol from '../../Assets/deleteSymbol.png';
+import plusSymbol from "../../Assets/plusSymbol.png";
+import deleteSymbol from "../../Assets/deleteSymbol.png";
+import { useNavigate, useLocation } from "react-router";
+import axios from "axios";
 
+const BASE_URL = "http://localhost:5000";
 function Dashboard() {
+  const location = useLocation();
+  const navigate = useNavigate();
+  const loggedInUser = location.state && location.state.loggedInUser;
+  
   const [isCreateQuizFormOpen, setIsCreateQuizFormOpen] = useState(false);
   const [isQuizQuestiontype, setIsQuizQuestionType] = useState(false);
   const [isQuizPollType, setIsQuizPollType] = useState(false);
-  const [isQuestionQuizFormOpen, setISQuestionQuizFormOpen] = useState(true);
+  const [isQuestionQuizFormOpen, setISQuestionQuizFormOpen] = useState(false);
   const [isPollQuizFormOpen, setIsPollQuizFormOpen] = useState(false);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [quizName, setQuizName] = useState({
     quizName: "",
+    createdDate: "",
   });
+
+  
 
   const handleQuizDashboardOpen = () => {};
   const handleQuizAnalyticsOpen = () => {};
@@ -32,6 +42,11 @@ function Dashboard() {
     setIsQuizPollType(true);
   };
   const handleCloseCreateQuizForm = () => {
+    setQuizName((prevState) => ({
+      ...prevState,
+      quizName: "",
+      createdDate: "",
+    }));
     setIsCreateQuizFormOpen(false);
   };
 
@@ -48,7 +63,31 @@ function Dashboard() {
       setIsCreateQuizFormOpen(false);
       setIsPollQuizFormOpen(true);
     }
+    const months = [
+      "Jan",
+      "Feb",
+      "Mar",
+      "Apr",
+      "May",
+      "Jun",
+      "Jul",
+      "Aug",
+      "Sep",
+      "Oct",
+      "Nov",
+      "Dec",
+    ];
+    const today = new Date();
+    const day = String(today.getDate()).padStart(2, "0");
+    const month = months[today.getMonth()];
+    const year = today.getFullYear();
+    const formattedDate = `${day},${month},${year}`;
+    setQuizName((prevState) => ({
+      ...prevState,
+      createdDate: formattedDate,
+    }));
   };
+
   const handleQuizNameChange = (event) => {
     const { name, value } = event.target;
     setQuizName((prevState) => ({
@@ -106,7 +145,11 @@ function Dashboard() {
         ...prevQuestions,
         {
           question: "",
-          options: [{ text: "", imageURL: "" },{ text: "", imageURL: "" },{ text: "", imageURL: "" }],
+          options: [
+            { text: "", imageURL: "" },
+            { text: "", imageURL: "" },
+            { text: "", imageURL: "" },
+          ],
           correctAnswer: null,
           timer: null,
           optionFormat: "text",
@@ -170,8 +213,20 @@ function Dashboard() {
     setISQuestionQuizFormOpen(false);
   };
 
-  const handleCreateQuestionQuizFormSubmit = (e) => {
+  const handleCreateQuestionQuizFormSubmit = async(e) => {
     e.preventDefault();
+    
+    const quizData = ({
+      quizName: quizName.quizName,
+      createdDate: quizName.createdDate,
+      questions: questions,
+      impressions: 5000,
+    })
+    const response = await axios.post(
+      `${BASE_URL}/api/quizData`,
+      quizData
+    );
+    window.alert(response.data.message)
   };
 
   return (
@@ -242,9 +297,10 @@ function Dashboard() {
         <>
           <div className="overlay">
             <div className="create-question-quiz-form">
+              <form method='POST' onSubmit={handleCreateQuestionQuizFormSubmit}>
               <div className="question-numbers-component">
                 {questions.map((_, index) => (
-                  <>
+                  <React.Fragment key={index}>
                     <button
                       key={index}
                       className={`question-number-div ${
@@ -258,18 +314,23 @@ function Dashboard() {
                     </button>
                     {questions.length >= 2 && index >= 1 && (
                       <div
+                        
                         onClick={(e) => handleRemoveQuestion(index)}
                         className="question-remove-symbol"
                       >
                         <img src={closeSymbol} alt="close-symbol"></img>
                       </div>
                     )}
-                  </>
+                  </React.Fragment>
                 ))}
-                {questions.length < 5 && <img 
-                src={plusSymbol}
-                alt="plus-symbol"
-                className="add-question-symbol" onClick={handleAddQuestion}></img>}
+                {questions.length < 5 && (
+                  <img
+                    src={plusSymbol}
+                    alt="plus-symbol"
+                    className="add-question-symbol"
+                    onClick={handleAddQuestion}
+                  ></img>
+                )}
                 <p className="max-5-questions-message">Max 5 Questions</p>
               </div>
               <input
@@ -277,7 +338,7 @@ function Dashboard() {
                 placeholder={`Question ${currentQuestionIndex + 1}`}
                 value={questions[currentQuestionIndex].question}
                 type="text"
-                name="pollQuestion"
+                name="question"
                 onChange={(e) =>
                   handleQuestionInputChange(
                     currentQuestionIndex,
@@ -289,7 +350,7 @@ function Dashboard() {
               ></input>
               <div className="question-options-type">
                 <p className="option-type-text">Option Type</p>
-                <form>
+                <>
                   <div className="different-option-types">
                     <div className="each-option-with-label">
                       <label className="option-type-text">
@@ -299,7 +360,9 @@ function Dashboard() {
                           checked={
                             questions[currentQuestionIndex].optionFormat ===
                             "text"
+                          
                           }
+                          
                           onChange={() =>
                             handleSelectedQuizOptionsFormatChange(
                               currentQuestionIndex,
@@ -349,7 +412,7 @@ function Dashboard() {
                       </label>
                     </div>
                   </div>
-                </form>
+                  </>
               </div>
               <div className="quiz-answer-inputs">
                 {questions[currentQuestionIndex].optionFormat === "text" ||
@@ -359,33 +422,58 @@ function Dashboard() {
                       (option, optionIndex) => (
                         <div key={optionIndex} className="question-options-div">
                           <input
+                          required
                             type="radio"
                             className="options-input-radio-div"
                             checked={
                               questions[currentQuestionIndex].correctAnswer ===
-                              (questions[currentQuestionIndex].optionFormat === "text"
+                              (questions[currentQuestionIndex].optionFormat ===
+                              "text"
                                 ? option.text
                                 : option.imageURL)
                             }
-                            onChange={() =>
-                              handleSelectCorrectAnswer(
-                                currentQuestionIndex,
-                                questions[currentQuestionIndex].optionFormat === "text"
-                                  ? option.text
-                                  : option.imageURL
-                              )
-                            }
+                            onChange={() => {
+                              if (
+                                (questions[currentQuestionIndex]
+                                  .optionFormat === "text" &&
+                                  option.text === "") ||
+                                (questions[currentQuestionIndex]
+                                  .optionFormat === "ImageURL" &&
+                                  option.imageURL === "")
+                              ) {
+                                alert("Please enter your input first");
+                              } else {
+                                handleSelectCorrectAnswer(
+                                  currentQuestionIndex,
+                                  questions[currentQuestionIndex]
+                                    .optionFormat === "text"
+                                    ? option.text
+                                    : option.imageURL
+                                );
+                              }
+                            }}
                           ></input>
                           <input
+                          required
                             type="text"
-                            className="options-input-div"
+                            className={`options-input-div ${
+                              questions[currentQuestionIndex].correctAnswer ===
+                              (questions[currentQuestionIndex].optionFormat ===
+                              "text"
+                                ? option.text
+                                : option.imageURL)
+                                ? "green-background-for-correct-answer"
+                                : ""
+                            }`}
                             placeholder={
-                              questions[currentQuestionIndex].optionFormat === "text"
+                              questions[currentQuestionIndex].optionFormat ===
+                              "text"
                                 ? "Text"
                                 : "Image URL"
                             }
                             value={
-                              questions[currentQuestionIndex].optionFormat === "text"
+                              questions[currentQuestionIndex].optionFormat ===
+                              "text"
                                 ? option.text
                                 : option.imageURL
                             }
@@ -393,7 +481,8 @@ function Dashboard() {
                               handleOptionInputChange(
                                 currentQuestionIndex,
                                 optionIndex,
-                                questions[currentQuestionIndex].optionFormat === "text"
+                                questions[currentQuestionIndex].optionFormat ===
+                                  "text"
                                   ? "text"
                                   : "imageURL",
                                 e.target.value
@@ -404,7 +493,7 @@ function Dashboard() {
                           {questions[currentQuestionIndex].options.length > 2 &&
                             optionIndex > 1 && (
                               <button
-                              className="delete-symbol-button"
+                                className="delete-symbol-button"
                                 onClick={() =>
                                   handleRemoveOption(
                                     currentQuestionIndex,
@@ -413,10 +502,9 @@ function Dashboard() {
                                 }
                               >
                                 <img
-                                alt="delete-symbol"
-                                
-                                src={deleteSymbol}>
-                                </img>
+                                  alt="delete-symbol"
+                                  src={deleteSymbol}
+                                ></img>
                               </button>
                             )}
                         </div>
@@ -432,55 +520,72 @@ function Dashboard() {
                     {questions[currentQuestionIndex].options.map(
                       (option, optionIndex) => (
                         <div key={optionIndex} className="question-options-div">
-                            <input
-                              type="radio"
-                              className="options-input-radio-div"
-                              checked={
-                                questions[currentQuestionIndex]
-                                  .correctAnswer ===
-                                `${option.text} ${option.imageURL}`
-                              }
-                              onChange={() =>
+                          <input
+                            required
+                            type="radio"
+                            className="options-input-radio-div"
+                            checked={
+                              questions[currentQuestionIndex].correctAnswer ===
+                              `${option.text} ${option.imageURL}`
+                            }
+                            onChange={() => {
+                              if (
+                                option.text === "" ||
+                                option.imageURL === ""
+                              ) {
+                                alert("Please enter both input and image url");
+                              } else {
                                 handleSelectCorrectAnswer(
                                   currentQuestionIndex,
                                   `${option.text} ${option.imageURL}`
-                                )
+                                );
                               }
-                            ></input>
-                            <input
-                              type="text"
-                              placeholder="Text"
-                              className="options-input-div"
-                              value={option.text}
-                              onChange={(e) =>
-                                handleOptionInputChange(
-                                  currentQuestionIndex,
-                                  optionIndex,
-                                  "text",
-                                  e.target.value
-                                )
-                              }
-                            ></input>
-                            <input
-                              type="text"
-                              className="options-input-div"
-                              placeholder="Image URL"
-                              value={option.imageURL}
-                              onChange={(e) =>
-                                handleOptionInputChange(
-                                  currentQuestionIndex,
-                                  optionIndex,
-                                  "imageURL",
-                                  e.target.value
-                                )
-                              }
-                            ></input>
-                            
-                      
+                            }}
+                          ></input>
+                          <input
+                          required
+                            type="text"
+                            placeholder="Text"
+                            className={`options-input-div ${
+                              questions[currentQuestionIndex].correctAnswer ===
+                              `${option.text} ${option.imageURL}`
+                                ? "green-background-for-correct-answer"
+                                : ""
+                            }`}
+                            value={option.text}
+                            onChange={(e) =>
+                              handleOptionInputChange(
+                                currentQuestionIndex,
+                                optionIndex,
+                                "text",
+                                e.target.value
+                              )
+                            }
+                          ></input>
+                          <input
+                            type="text"
+                            className={`options-input-div ${
+                              questions[currentQuestionIndex].correctAnswer ===
+                              `${option.text} ${option.imageURL}`
+                                ? "green-background-for-correct-answer"
+                                : ""
+                            }`}
+                            placeholder="Image URL"
+                            value={option.imageURL}
+                            onChange={(e) =>
+                              handleOptionInputChange(
+                                currentQuestionIndex,
+                                optionIndex,
+                                "imageURL",
+                                e.target.value
+                              )
+                            }
+                          ></input>
+
                           {questions[currentQuestionIndex].options.length > 2 &&
                             optionIndex > 1 && (
                               <button
-                              className="delete-symbol-button"
+                                className="delete-symbol-button"
                                 onClick={() =>
                                   handleRemoveOption(
                                     currentQuestionIndex,
@@ -489,10 +594,9 @@ function Dashboard() {
                                 }
                               >
                                 <img
-                                alt="delete-symbol"
-                                
-                                src={deleteSymbol}>
-                                </img>
+                                  alt="delete-symbol"
+                                  src={deleteSymbol}
+                                ></img>
                               </button>
                             )}
                         </div>
@@ -547,11 +651,20 @@ function Dashboard() {
                 </button>
               </div>
               <div className="cancel-create-quiz-buttons">
-                <button className="cancel-question-form-button" onClick={handleCloseQuestionQuizForm}>Cancel</button>
-                <button className="create-question-form-button" onClick={handleCreateQuestionQuizFormSubmit}>
+                <button
+                  className="cancel-question-form-button"
+                  onClick={handleCloseQuestionQuizForm}
+                >
+                  Cancel
+                </button>
+                <button
+                  className="create-question-form-button"
+                  type="submit"
+                >
                   Create Quiz
                 </button>
               </div>
+              </form>
             </div>
           </div>
         </>

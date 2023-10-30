@@ -355,6 +355,11 @@
   padding-left: 2%;
   margin-right:3%;
 }
+
+.green-background-for-correct-answer{
+  background-color: #60b84b;
+  color: #fff;
+}
 .options-input-radio-div {
   margin-right: 1%;
 }
