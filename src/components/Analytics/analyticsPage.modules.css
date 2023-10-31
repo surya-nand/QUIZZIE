@@ -1,0 +1,4 @@
+.quiz-analysis-table{
+    scroll-behavior: smooth;
+    overflow-y:scroll;
+}

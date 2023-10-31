@@ -58,7 +58,7 @@ function Homepage() {
       if (response.data.message === "Login Successful") {
         navigate("/dashboard", {
           state: {
-            loggedInuser: response.data.userDetails,
+            loggedInUser: response.data.userDetails,
           },
         });
         console.log(response.data.userDetails)
