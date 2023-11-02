@@ -22,7 +22,8 @@ function Dashboard() {
   const [isPollQuizFormOpen, setIsPollQuizFormOpen] = useState(false);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [isDashboardContentOpen, setIsDashboardContentOpen] = useState(false); 
-  const [isAnalyticsContentOpen, setIsAnalyticsContentOpen] = useState(true);
+  const [isAnalyticsContentOpen, setIsAnalyticsContentOpen] = useState(false);
+  const [isQuizCreatedSuccessfully, setIsQuizCreatedSuccessfully] = useState(true)
 
   const [quizName, setQuizName] = useState({
     quizName: "",
@@ -242,14 +243,16 @@ function Dashboard() {
 
     const response = await axios.post(`${BASE_URL}/api/quizData`, quizData);
 
+    if(response.data.message ==="Quiz created successfully"){
+       setIsQuizCreatedSuccessfully(true);
+    }
+
     if(loggedInUser && response.data.message==="Quiz created successfully"){
       loggedInUser.quizesCreated = [...loggedInUser.quizesCreated, quizData]
       const userUpdateResponse = await axios.put(`${BASE_URL}/api/users/${loggedInUser._id}`, loggedInUser);
       console.log(userUpdateResponse.data)
     }
 
-    console.log(response.data);
-    window.alert(response.data.message);
   };
 
   return (
@@ -708,6 +711,27 @@ function Dashboard() {
           </div>
         </>
       )}
+      {
+        isQuizCreatedSuccessfully && (
+          <div className="overlay">
+          <div className="quiz-published-notification">
+           <img
+           src={closeSymbol}
+           alt='close-symbol'
+           className="quiz-published-close-symbol"
+           >
+           </img>
+          <h1>
+            Congrats your Quiz is <br/> Published!
+          </h1>
+          <p>your link is here</p>
+          <button className="quiz-share-button">
+            Share
+          </button>
+          </div>
+          </div>
+        )
+      }
       <div className="dashboard-content">
         {isDashboardContentOpen && (
           <DashboardContent/>
