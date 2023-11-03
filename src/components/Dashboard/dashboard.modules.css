@@ -452,11 +452,13 @@
   font-style: normal;
   font-weight: 600;
   line-height: normal;
+  cursor: pointer;
 }
 .create-question-form-button {
   background: #60b84b;
   color: #fff;
   margin-left: 23%;
+  
 }
 
 .quiz-published-notification {
@@ -481,6 +483,7 @@
   align-items: center;
   margin-left: 94%;
   min-width: 5%;
+  cursor: pointer;
 }
 .quiz-published-notification h1 {
   color: #474444;
@@ -522,4 +525,5 @@
   line-height: normal;
   border: none;
   margin-bottom: 5%;
+  cursor: pointer;
 }

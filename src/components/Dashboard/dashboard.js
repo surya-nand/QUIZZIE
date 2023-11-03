@@ -10,6 +10,7 @@ import DashboardContent from "../DashboardContent/dashboardContent";
 import AnalyticsPage from "../Analytics/analysisPage";
 
 const BASE_URL = "http://localhost:5000";
+const CLIENT_URL = "http://localhost:3000";
 
 function Dashboard() {
   const location = useLocation();
@@ -21,9 +22,11 @@ function Dashboard() {
   const [isQuestionQuizFormOpen, setISQuestionQuizFormOpen] = useState(false);
   const [isPollQuizFormOpen, setIsPollQuizFormOpen] = useState(false);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
-  const [isDashboardContentOpen, setIsDashboardContentOpen] = useState(false); 
+  const [isDashboardContentOpen, setIsDashboardContentOpen] = useState(true);
   const [isAnalyticsContentOpen, setIsAnalyticsContentOpen] = useState(false);
-  const [isQuizCreatedSuccessfully, setIsQuizCreatedSuccessfully] = useState(true)
+  const [isQuizCreatedNotificationOpen, setIsQuizCreatedNotificationOpen] =
+    useState(false);
+  const [quizLink, setQuizLink] = useState("");
 
   const [quizName, setQuizName] = useState({
     quizName: "",
@@ -31,21 +34,20 @@ function Dashboard() {
   });
 
   const handleQuizDashboardOpen = () => {
-    setIsDashboardContentOpen(true)
+    setIsDashboardContentOpen(true);
     setIsCreateQuizFormOpen(false);
-    setIsAnalyticsContentOpen(false)
+    setIsAnalyticsContentOpen(false);
   };
   const handleQuizAnalyticsOpen = () => {
-    setIsAnalyticsContentOpen(true)
-    setIsDashboardContentOpen(false)
-    setIsCreateQuizFormOpen(false)
+    setIsAnalyticsContentOpen(true);
+    setIsDashboardContentOpen(false);
+    setIsCreateQuizFormOpen(false);
   };
   const handleCreateQuizOpen = () => {
     setIsCreateQuizFormOpen(true);
-    setIsAnalyticsContentOpen(false)
-    setIsDashboardContentOpen(false)
+    setIsAnalyticsContentOpen(false);
+    setIsDashboardContentOpen(false);
   };
-
 
   const handleQuizQuestionFormatSelection = () => {
     setIsQuizQuestionType(true);
@@ -200,9 +202,9 @@ function Dashboard() {
     setQuestions(updatedQuestions);
   };
 
-  const handleSelectCorrectAnswer = (questionIndex, option) => {
+  const handleSelectCorrectAnswer = (questionIndex, optionIndex) => {
     const updatedQuestions = [...questions];
-    updatedQuestions[questionIndex].correctAnswer = option;
+    updatedQuestions[questionIndex].correctAnswer = optionIndex;
     setQuestions(updatedQuestions);
   };
 
@@ -218,7 +220,7 @@ function Dashboard() {
     setQuestions(updatedQuestions);
   };
 
-  const handleQuestionTimerClick = (e,index, timeInSeconds) => {
+  const handleQuestionTimerClick = (e, index, timeInSeconds) => {
     e.preventDefault();
     const updatedQuestions = [...questions];
     updatedQuestions[index].timer = timeInSeconds;
@@ -233,7 +235,6 @@ function Dashboard() {
 
   const handleCreateQuestionQuizFormSubmit = async (e) => {
     e.preventDefault();
-  
     const quizData = {
       quizName: quizName.quizName,
       createdDate: quizName.createdDate,
@@ -243,16 +244,41 @@ function Dashboard() {
 
     const response = await axios.post(`${BASE_URL}/api/quizData`, quizData);
 
-    if(response.data.message ==="Quiz created successfully"){
-       setIsQuizCreatedSuccessfully(true);
+    if (response.data.message === "Quiz created successfully") {
+      setIsQuizCreatedNotificationOpen(true);
+      setISQuestionQuizFormOpen(false);
+      setIsDashboardContentOpen(true);
+      const quizId = response.data.quizId;
+      const quizLink = `${CLIENT_URL}/quiz/${quizId}`;
+      setQuizLink(quizLink);
+    } else {
+      window.alert(response.data.message);
     }
 
-    if(loggedInUser && response.data.message==="Quiz created successfully"){
-      loggedInUser.quizesCreated = [...loggedInUser.quizesCreated, quizData]
-      const userUpdateResponse = await axios.put(`${BASE_URL}/api/users/${loggedInUser._id}`, loggedInUser);
-      console.log(userUpdateResponse.data)
+    if (loggedInUser && response.data.message === "Quiz created successfully") {
+      loggedInUser.quizesCreated = [...loggedInUser.quizesCreated, quizData];
+      const userUpdateResponse = await axios.put(
+        `${BASE_URL}/api/users/${loggedInUser._id}`,
+        loggedInUser
+      );
+      console.log(userUpdateResponse.data);
     }
+  };
 
+  const handleCloseQuizPublishedNotification = () => {
+    setIsQuizCreatedNotificationOpen(false);
+    setIsDashboardContentOpen(true);
+  };
+
+  const handleCopyToClipboard = (linkToQuiz) => {
+    navigator.clipboard.writeText(linkToQuiz).then(
+      () => {
+        window.alert("Link copied to clipboard");
+      },
+      (err) => {
+        console.error("Failed to copy link to clipboard", err);
+      }
+    );
   };
 
   return (
@@ -260,9 +286,24 @@ function Dashboard() {
       <div className="dashboard-menu">
         <h1>QUIZZIE</h1>
         <div className="dashboard-menu-options">
-          <p className={isDashboardContentOpen ? 'dashboard-menu-active' : ''} onClick={handleQuizDashboardOpen}>Dashboard</p>
-          <p className={isAnalyticsContentOpen ? 'dashboard-menu-active' : ''} onClick={handleQuizAnalyticsOpen}>Analytics</p>
-          <p className={isCreateQuizFormOpen ? 'dashboard-menu-active' : ''} onClick={handleCreateQuizOpen}>Create Quiz</p>
+          <p
+            className={isDashboardContentOpen ? "dashboard-menu-active" : ""}
+            onClick={handleQuizDashboardOpen}
+          >
+            Dashboard
+          </p>
+          <p
+            className={isAnalyticsContentOpen ? "dashboard-menu-active" : ""}
+            onClick={handleQuizAnalyticsOpen}
+          >
+            Analytics
+          </p>
+          <p
+            className={isCreateQuizFormOpen ? "dashboard-menu-active" : ""}
+            onClick={handleCreateQuizOpen}
+          >
+            Create Quiz
+          </p>
         </div>
         <div className="logout-above-stroke"></div>
         <h2 className="user-logout-button">LOGOUT</h2>
@@ -451,16 +492,11 @@ function Dashboard() {
                             className="question-options-div"
                           >
                             <input
-                              required
                               type="radio"
                               className="options-input-radio-div"
                               checked={
                                 questions[currentQuestionIndex]
-                                  .correctAnswer ===
-                                (questions[currentQuestionIndex]
-                                  .optionFormat === "text"
-                                  ? option.text
-                                  : option.imageURL)
+                                  .correctAnswer === optionIndex
                               }
                               onChange={() => {
                                 if (
@@ -475,10 +511,7 @@ function Dashboard() {
                                 } else {
                                   handleSelectCorrectAnswer(
                                     currentQuestionIndex,
-                                    questions[currentQuestionIndex]
-                                      .optionFormat === "text"
-                                      ? option.text
-                                      : option.imageURL
+                                    optionIndex
                                   );
                                 }
                               }}
@@ -556,13 +589,11 @@ function Dashboard() {
                             className="question-options-div"
                           >
                             <input
-                              required
                               type="radio"
                               className="options-input-radio-div"
                               checked={
                                 questions[currentQuestionIndex]
-                                  .correctAnswer ===
-                                `${option.text} ${option.imageURL}`
+                                  .correctAnswer === optionIndex
                               }
                               onChange={() => {
                                 if (
@@ -575,7 +606,7 @@ function Dashboard() {
                                 } else {
                                   handleSelectCorrectAnswer(
                                     currentQuestionIndex,
-                                    `${option.text} ${option.imageURL}`
+                                    optionIndex
                                   );
                                 }
                               }}
@@ -665,7 +696,7 @@ function Dashboard() {
                         : ""
                     }
                     onClick={(e) =>
-                      handleQuestionTimerClick(e,currentQuestionIndex, null)
+                      handleQuestionTimerClick(e, currentQuestionIndex, null)
                     }
                   >
                     OFF
@@ -677,7 +708,7 @@ function Dashboard() {
                         : ""
                     }
                     onClick={(e) =>
-                      handleQuestionTimerClick(e,currentQuestionIndex, 5)
+                      handleQuestionTimerClick(e, currentQuestionIndex, 5)
                     }
                   >
                     5 sec
@@ -689,7 +720,7 @@ function Dashboard() {
                         : ""
                     }
                     onClick={(e) =>
-                      handleQuestionTimerClick(e,currentQuestionIndex, 10)
+                      handleQuestionTimerClick(e, currentQuestionIndex, 10)
                     }
                   >
                     10 sec
@@ -711,36 +742,31 @@ function Dashboard() {
           </div>
         </>
       )}
-      {
-        isQuizCreatedSuccessfully && (
-          <div className="overlay">
+      {isQuizCreatedNotificationOpen && (
+        <div className="overlay">
           <div className="quiz-published-notification">
-           <img
-           src={closeSymbol}
-           alt='close-symbol'
-           className="quiz-published-close-symbol"
-           >
-           </img>
-          <h1>
-            Congrats your Quiz is <br/> Published!
-          </h1>
-          <p>your link is here</p>
-          <button className="quiz-share-button">
-            Share
-          </button>
+            <img
+              src={closeSymbol}
+              alt="close-symbol"
+              className="quiz-published-close-symbol"
+              onClick={handleCloseQuizPublishedNotification}
+            ></img>
+            <h1>
+              Congrats your Quiz is <br /> Published!
+            </h1>
+            <p>{quizLink}</p>
+            <button
+              onClick={() => handleCopyToClipboard(quizLink)}
+              className="quiz-share-button"
+            >
+              Share
+            </button>
           </div>
-          </div>
-        )
-      }
+        </div>
+      )}
       <div className="dashboard-content">
-        {isDashboardContentOpen && (
-          <DashboardContent/>
-        )}
-        {
-          isAnalyticsContentOpen && (
-          <AnalyticsPage/>
-          )
-        }
+        {isDashboardContentOpen && <DashboardContent />}
+        {isAnalyticsContentOpen && <AnalyticsPage />}
       </div>
     </div>
   );
