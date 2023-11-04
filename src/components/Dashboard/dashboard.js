@@ -128,7 +128,7 @@ function Dashboard() {
     handleActiveQuestion(index);
     console.log(index);
   };
-
+  
   const handleActiveQuestion = (index) => {
     setCurrentQuestionIndex(index);
   };
@@ -137,24 +137,30 @@ function Dashboard() {
     {
       question: "",
       options: [
-        { text: "", imageURL: "" },
-        { text: "", imageURL: "" },
-        { text: "", imageURL: "" },
+        { text: "", imageURL: "",selectedCount: 0 },
+        { text: "", imageURL: "",selectedCount: 0 },
+        { text: "", imageURL: "",selectedCount: 0 },
       ],
       correctAnswer: null,
       timer: null,
       optionFormat: "text",
+      totalSubmissions: 0,
+      totalCorrectSubmissions: 0,
+      totalIncorrectSubmissions: 0,
+
     },
     {
       question: "",
       options: [
-        { text: "", imageURL: "" },
-        { text: "", imageURL: "" },
-        { text: "", imageURL: "" },
+        { text: "", imageURL: "", selectedCount: 0 },
+        { text: "", imageURL: "", selectedCount: 0 },
+        { text: "", imageURL: "", selectedCount: 0 },
       ],
       correctAnswer: null,
       timer: null,
       optionFormat: "text",
+      totalCorrectSubmissions: 0,
+      totalIncorrectSubmissions: 0,
     },
   ]);
 
@@ -165,13 +171,15 @@ function Dashboard() {
         {
           question: "",
           options: [
-            { text: "", imageURL: "" },
-            { text: "", imageURL: "" },
-            { text: "", imageURL: "" },
+            { text: "", imageURL: "", selectedCount: 0 },
+            { text: "", imageURL: "", selectedCount: 0 },
+            { text: "", imageURL: "", selectedCount: 0 },
           ],
           correctAnswer: null,
           timer: null,
           optionFormat: "text",
+          totalCorrectSubmissions: 0,
+          totalIncorrectSubmissions: 0,
         },
       ]);
     } else {
@@ -210,7 +218,11 @@ function Dashboard() {
 
   const handleAddOption = (index) => {
     const updatedQuestions = [...questions];
-    updatedQuestions[index].options.push({ text: "", imageURL: "" });
+    updatedQuestions[index].options.push({
+      text: "",
+      imageURL: "",
+      selectedCount: 0,
+    });
     setQuestions(updatedQuestions);
   };
 
@@ -231,6 +243,8 @@ function Dashboard() {
   const handleCloseQuestionQuizForm = (e) => {
     e.preventDefault();
     setISQuestionQuizFormOpen(false);
+    setIsPollQuizFormOpen(false)
+    setIsDashboardContentOpen(true)
   };
 
   const handleCreateQuestionQuizFormSubmit = async (e) => {
@@ -240,13 +254,16 @@ function Dashboard() {
       createdDate: quizName.createdDate,
       questions: questions,
       impressions: 5000,
+      quizType: isQuestionQuizFormOpen ? "question" : "poll",
     };
 
     const response = await axios.post(`${BASE_URL}/api/quizData`, quizData);
+    console.log(response)
 
     if (response.data.message === "Quiz created successfully") {
       setIsQuizCreatedNotificationOpen(true);
       setISQuestionQuizFormOpen(false);
+      setIsPollQuizFormOpen(false);
       setIsDashboardContentOpen(true);
       const quizId = response.data.quizId;
       const quizLink = `${CLIENT_URL}/quiz/${quizId}`;
@@ -264,6 +281,8 @@ function Dashboard() {
       console.log(userUpdateResponse.data);
     }
   };
+
+  
 
   const handleCloseQuizPublishedNotification = () => {
     setIsQuizCreatedNotificationOpen(false);
@@ -322,7 +341,7 @@ function Dashboard() {
                   placeholder="Quiz name"
                   required
                   maxLength={6}
-                  minLength={3}
+                  minLength={6}
                   onChange={handleQuizNameChange}
                 ></input>
                 <div className="quiz-type">
@@ -360,7 +379,7 @@ function Dashboard() {
           </div>
         </>
       )}
-      {isQuestionQuizFormOpen && (
+      {(isQuestionQuizFormOpen || isPollQuizFormOpen)&& (
         <>
           <div className="overlay">
             <div className="create-question-quiz-form">
@@ -403,8 +422,10 @@ function Dashboard() {
                 </div>
                 <input
                   className="quiz-question-input-div"
-                  placeholder={`Question ${currentQuestionIndex + 1}`}
+                
+                  placeholder={isQuestionQuizFormOpen ? `Question ${currentQuestionIndex + 1}` : `Poll Question ${currentQuestionIndex + 1}`}
                   value={questions[currentQuestionIndex].question}
+
                   type="text"
                   name="question"
                   onChange={(e) =>
@@ -491,6 +512,7 @@ function Dashboard() {
                             key={optionIndex}
                             className="question-options-div"
                           >
+                            {isQuestionQuizFormOpen && ( 
                             <input
                               type="radio"
                               className="options-input-radio-div"
@@ -516,16 +538,13 @@ function Dashboard() {
                                 }
                               }}
                             ></input>
+                            )}
                             <input
                               required
                               type="text"
                               className={`options-input-div ${
                                 questions[currentQuestionIndex]
-                                  .correctAnswer ===
-                                (questions[currentQuestionIndex]
-                                  .optionFormat === "text"
-                                  ? option.text
-                                  : option.imageURL)
+                                  .correctAnswer === optionIndex
                                   ? "green-background-for-correct-answer"
                                   : ""
                               }`}
@@ -588,6 +607,7 @@ function Dashboard() {
                             key={optionIndex}
                             className="question-options-div"
                           >
+                            {isQuestionQuizFormOpen && (
                             <input
                               type="radio"
                               className="options-input-radio-div"
@@ -611,14 +631,14 @@ function Dashboard() {
                                 }
                               }}
                             ></input>
+                            )}
                             <input
                               required
                               type="text"
                               placeholder="Text"
                               className={`options-input-div ${
                                 questions[currentQuestionIndex]
-                                  .correctAnswer ===
-                                `${option.text} ${option.imageURL}`
+                                  .correctAnswer === optionIndex
                                   ? "green-background-for-correct-answer"
                                   : ""
                               }`}
@@ -687,6 +707,7 @@ function Dashboard() {
                     Add option
                   </button>
                 )}
+                {isQuestionQuizFormOpen && (
                 <div className="quiz-each-question-timer">
                   <p>Timer</p>
                   <button
@@ -726,6 +747,8 @@ function Dashboard() {
                     10 sec
                   </button>
                 </div>
+                )}
+                
                 <div className="cancel-create-quiz-buttons">
                   <button
                     className="cancel-question-form-button"

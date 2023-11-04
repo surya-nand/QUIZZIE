@@ -1,11 +1,11 @@
-.quiz-page {
+.quiz-page,.congratulations-pag,.thanks-page {
   min-height: 100vh;
   background-color: #041325;
   display: flex;
   justify-content: center;
 }
 
-.quiz-arena {
+.quiz-arena,.congratulations-arena,.thanks-arena{
   width: 80vw;
   height: 50%;
   border-radius: 15px;
@@ -142,5 +142,33 @@
     font-weight: 600;
     line-height: normal;
 }
+.congratulations-arena{
+    min-height: 82vh;
+}
 
+.congratulations-arena p,.congratulations-arena h1{
+    color: #474444;
+    text-align: center;
+    font-family: Poppins;
+    font-size: 2.6vw;
+    font-style: normal;
+    font-weight: 700;
+    line-height: normal;
+    margin-top: 6%;
+}
+.congratulations-arena img{
+    margin-top: -4%;
+}
+.score-card{
+    color: #60b84b;
+}
+.thanks-arena p{
+  color: #474444;
+  text-align: center;
+  font-family: Poppins;
+  font-size: 5.18vw;
+  font-style: normal;
+  font-weight: 700;
+  line-height: normal;
+}
   
