@@ -9,6 +9,8 @@ import axios from "axios";
 import DashboardContent from "../DashboardContent/dashboardContent";
 import AnalyticsPage from "../Analytics/analysisPage";
 
+
+
 const BASE_URL = "http://localhost:5000";
 const CLIENT_URL = "http://localhost:3000";
 
@@ -26,7 +28,9 @@ function Dashboard() {
   const [isAnalyticsContentOpen, setIsAnalyticsContentOpen] = useState(false);
   const [isQuizCreatedNotificationOpen, setIsQuizCreatedNotificationOpen] =
     useState(false);
+  const [loginUserCheck, setLoginUserCheck] = useState(false);
   const [quizLink, setQuizLink] = useState("");
+
 
   const [quizName, setQuizName] = useState({
     quizName: "",
@@ -300,6 +304,18 @@ function Dashboard() {
     );
   };
 
+  const handleUserLogout = () => {
+    localStorage.removeItem("token")
+    navigate("/")
+  }
+  const token = localStorage.getItem("token");
+
+  if (!loggedInUser || !token){
+    navigate("/");
+    return null;
+  }
+
+
   return (
     <div className="dashboard-page">
       <div className="dashboard-menu">
@@ -325,7 +341,7 @@ function Dashboard() {
           </p>
         </div>
         <div className="logout-above-stroke"></div>
-        <h2 className="user-logout-button">LOGOUT</h2>
+        <h2 onClick={handleUserLogout} className="user-logout-button">LOGOUT</h2>
       </div>
 
       {isCreateQuizFormOpen && (

@@ -56,6 +56,7 @@ function Homepage() {
       );
       window.alert(response.data.message);
       if (response.data.message === "Login Successful") {
+        localStorage.setItem("token",response.data.token)
         navigate("/dashboard", {
           state: {
             loggedInUser: response.data.userDetails,
