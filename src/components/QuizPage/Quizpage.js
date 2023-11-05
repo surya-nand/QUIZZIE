@@ -191,7 +191,7 @@ function Quizpage(props) {
           <div className="quiz-arena">
             <div className="question-number-and-timer-div">
               <p className="question-number-in-quiz">
-                {currentQuestionIndex + 1}/{quizDetails.questions.length}
+                {(currentQuestionIndex + 1).toString().padStart(2, "0")}/{quizDetails.questions.length.toString().padStart(2, "0")}
               </p>
               {currentQuestion.timer === null ? (
                 ""
@@ -199,7 +199,7 @@ function Quizpage(props) {
                 <p className="question-timer-div">{formatTime(time)}</p>
               )}
             </div>
-            <h1 className="quiz-each-question">{currentQuestion.question}</h1>
+            <div className="quiz-each-question">{currentQuestion.question}</div>
             <div className="quiz-options-div">
               {currentQuestion.options.map((option, optionIndex) => (
                 <div className="quiz-options" key={optionIndex}>
@@ -277,13 +277,15 @@ function Quizpage(props) {
           <div className="congratulations-arena">
             <p>Congrats Quiz is completed</p>
             <img src={cupSymbol} alt="congratulations-cup"></img>
-            <h1>
+            
+            <h1 className="score-text">
               Your Score is{" "}
               <span className="score-card">
                 {totalCorrectAnswers.toString().padStart(2, "0")}/
                 {quizDetails.questions.length.toString().padStart(2, "0")}
               </span>
             </h1>
+            
           </div>
         </div>
       )}
