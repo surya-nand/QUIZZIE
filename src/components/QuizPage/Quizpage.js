@@ -104,7 +104,7 @@ function Quizpage() {
       },
       0
     );
-    console.log(selectedOptions);
+    
     setTotalCorrectAnswers(correctAnswers);
     setShowResults(true);
     setIsQuizPageOpen(false);
@@ -126,7 +126,6 @@ function Quizpage() {
         `${BASE_URL}/api/quizData/${quizId}`,
         { selectedOptions: selectedOptionsArray }
       );
-      console.log(response);
     } catch (error) {
       console.log(error);
     }
@@ -149,7 +148,7 @@ function Quizpage() {
         );
         setIsQuizPageOpen(false)
         setShowThanksMessage(true)
-        console.log(response);
+        
       } catch (error) {
         console.log(error);
       }

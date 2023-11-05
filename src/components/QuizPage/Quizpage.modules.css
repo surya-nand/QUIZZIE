@@ -65,16 +65,18 @@
   line-height: normal;
   word-wrap: break-word;
   white-space: normal;
+  margin-bottom: 2%
 }
 
 .quiz-options-div {
-  width: 100%;
+  width: 88%;
   display: flex;
   flex-wrap: wrap-reverse;
-  justify-content: space-around;
+  justify-content: space-between;
   margin-bottom: 2%;
   margin-left: 5%;
   margin-right: 5%;
+  background-color: #041325;
 }
 
 .image-option-button,

@@ -54,7 +54,6 @@ function AnalyticsPage() {
       const response = await axios.delete(
         `${BASE_URL}/api/quizData/${quizToBeDeletedId}`
       );
-      console.log(response.data);
     } catch (error) {
       console.error("Error deleting quiz:", error);
     }

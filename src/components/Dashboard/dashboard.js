@@ -12,6 +12,7 @@ import AnalyticsPage from "../Analytics/analysisPage";
 const BASE_URL = "https://quizzie-server-jgr1.onrender.com";
 const CLIENT_URL = "https://suryaanand10-gmail-com-cuvette-evaluation-test-3.vercel.app";
 
+
 function Dashboard() {
   const location = useLocation();
   const navigate = useNavigate();
@@ -125,7 +126,7 @@ function Dashboard() {
   const handleActiveQuestionClick = (e, index) => {
     e.preventDefault();
     handleActiveQuestion(index);
-    console.log(index);
+    
   };
 
   const handleActiveQuestion = (index) => {
@@ -300,7 +301,7 @@ function Dashboard() {
     };
 
     const response = await axios.post(`${BASE_URL}/api/quizData`, quizData);
-    console.log(response);
+    
 
     if (response.data.message === "Quiz created successfully") {
       setIsQuizCreatedNotificationOpen(true);
@@ -340,7 +341,7 @@ function Dashboard() {
         `${BASE_URL}/api/users/${loggedInUser._id}`,
         loggedInUser
       );
-      console.log(userUpdateResponse.data);
+      
     }
   };
 
