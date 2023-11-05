@@ -10,7 +10,7 @@ import DashboardContent from "../DashboardContent/dashboardContent";
 import AnalyticsPage from "../Analytics/analysisPage";
 
 const BASE_URL = "https://quizzie-server-jgr1.onrender.com";
-const CLIENT_URL = "https://golden-panda-be2dfb.netlify.app";
+const CLIENT_URL = "http://localhost:3000";
 
 function Dashboard() {
   const location = useLocation();

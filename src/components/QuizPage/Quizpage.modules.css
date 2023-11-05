@@ -68,9 +68,10 @@
 }
 
 .quiz-options-div {
+  width: 100%;
   display: flex;
   flex-wrap: wrap-reverse;
-  justify-content: space-between;
+  justify-content: space-around;
   margin-bottom: 2%;
   margin-left: 5%;
   margin-right: 5%;
@@ -200,9 +201,13 @@
     white-space: normal;
     font-size: 7.2vw;
     margin-bottom: 4%;
+    justify-content: center;
+    align-items: center;
   }
   .quiz-options-div {
     display: flex;
+    justify-content: center;
+    align-items: center;
     flex-direction: column;
   }
   .text-option-button,.image-option-button,.text-and-image-option-button {
