@@ -2,11 +2,13 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import "./../QuizPage/Quizpage.modules.css";
 import cupSymbol from "./../../Assets/cupSymbol.png";
+import { useParams } from "react-router-dom";
 const BASE_URL = "https://quizzie-server-jgr1.onrender.com";
 
-function Quizpage(props) {
+
+function Quizpage() {
   const [invalidLink, setInvalidLink] = useState("");
-  const { quizId } = props;
+  const { quizId } = useParams();
   const [quizDetails, setQuizDetails] = useState([]);
   const [loading, setLoading] = useState(true);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);

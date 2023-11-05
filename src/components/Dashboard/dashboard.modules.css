@@ -496,7 +496,7 @@
 }
 .quiz-published-notification p {
   min-width: 70%;
-  height: 5vh;
+  min-height: 5vh;
   border-radius: 10px;
   background: #ededed;
   color: #474444;

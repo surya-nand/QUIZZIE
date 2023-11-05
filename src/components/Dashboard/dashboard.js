@@ -9,10 +9,8 @@ import axios from "axios";
 import DashboardContent from "../DashboardContent/dashboardContent";
 import AnalyticsPage from "../Analytics/analysisPage";
 
-
-
 const BASE_URL = "https://quizzie-server-jgr1.onrender.com";
-const CLIENT_URL = "http://localhost:3000";
+const CLIENT_URL = "https://golden-panda-be2dfb.netlify.app";
 
 function Dashboard() {
   const location = useLocation();
@@ -28,9 +26,7 @@ function Dashboard() {
   const [isAnalyticsContentOpen, setIsAnalyticsContentOpen] = useState(false);
   const [isQuizCreatedNotificationOpen, setIsQuizCreatedNotificationOpen] =
     useState(false);
-  const [loginUserCheck, setLoginUserCheck] = useState(false);
   const [quizLink, setQuizLink] = useState("");
-
 
   const [quizName, setQuizName] = useState({
     quizName: "",
@@ -131,7 +127,7 @@ function Dashboard() {
     handleActiveQuestion(index);
     console.log(index);
   };
-  
+
   const handleActiveQuestion = (index) => {
     setCurrentQuestionIndex(index);
   };
@@ -140,9 +136,9 @@ function Dashboard() {
     {
       question: "",
       options: [
-        { text: "", imageURL: "",selectedCount: 0 },
-        { text: "", imageURL: "",selectedCount: 0 },
-        { text: "", imageURL: "",selectedCount: 0 },
+        { text: "", imageURL: "", selectedCount: 0 },
+        { text: "", imageURL: "", selectedCount: 0 },
+        { text: "", imageURL: "", selectedCount: 0 },
       ],
       correctAnswer: null,
       timer: null,
@@ -150,7 +146,6 @@ function Dashboard() {
       totalSubmissions: 0,
       totalCorrectSubmissions: 0,
       totalIncorrectSubmissions: 0,
-
     },
     {
       question: "",
@@ -255,36 +250,30 @@ function Dashboard() {
   const handleCloseQuestionQuizForm = (e) => {
     e.preventDefault();
     setISQuestionQuizFormOpen(false);
-    setIsPollQuizFormOpen(false)
-    setIsDashboardContentOpen(true)
-    setQuestions({  
-      question: "",
-      options: [
-        { text: "", imageURL: "",selectedCount: 0 },
-        { text: "", imageURL: "",selectedCount: 0 },
-        { text: "", imageURL: "",selectedCount: 0 },
-      ],
-      correctAnswer: null,
-      timer: null,
-      optionFormat: "text",
-      totalSubmissions: 0,
-      totalCorrectSubmissions: 0,
-      totalIncorrectSubmissions: 0,
+    setIsPollQuizFormOpen(false);
+    setIsDashboardContentOpen(true);
 
-    },
-    {
-      question: "",
-      options: [
-        { text: "", imageURL: "", selectedCount: 0 },
-        { text: "", imageURL: "", selectedCount: 0 },
-        { text: "", imageURL: "", selectedCount: 0 },
-      ],
-      correctAnswer: null,
-      timer: null,
-      optionFormat: "text",
-      totalCorrectSubmissions: 0,
-      totalIncorrectSubmissions: 0,
-    },)
+    const resetQuestions = questions.map((question) => {
+      const resetOptions = question.options.map((option) => ({
+        text: "",
+        imageURL: "",
+        selectedCount: 0,
+      }));
+
+      return {
+        question: "",
+        options: resetOptions,
+        correctAnswer: null,
+        timer: null,
+        optionFormat: "text",
+        totalSubmissions: 0,
+        totalCorrectSubmissions: 0,
+        totalIncorrectSubmissions: 0,
+      };
+    });
+
+    setQuestions(resetQuestions);
+
     setQuizName({
       quizName: "",
       createdDate: "",
@@ -296,7 +285,7 @@ function Dashboard() {
     const isAnyQuestionNotFilled = questions.some(
       (question) => !question.question || question.question.trim() === ""
     );
-  
+
     if (isAnyQuestionNotFilled) {
       window.alert("Please fill all the questions before submitting the quiz.");
       return;
@@ -311,7 +300,7 @@ function Dashboard() {
     };
 
     const response = await axios.post(`${BASE_URL}/api/quizData`, quizData);
-    console.log(response)
+    console.log(response);
 
     if (response.data.message === "Quiz created successfully") {
       setIsQuizCreatedNotificationOpen(true);
@@ -321,34 +310,26 @@ function Dashboard() {
       const quizId = response.data.quizId;
       const quizLink = `${CLIENT_URL}/quiz/${quizId}`;
       setQuizLink(quizLink);
-      setQuestions({  
-        question: "",
-        options: [
-          { text: "", imageURL: "",selectedCount: 0 },
-          { text: "", imageURL: "",selectedCount: 0 },
-          { text: "", imageURL: "",selectedCount: 0 },
-        ],
-        correctAnswer: null,
-        timer: null,
-        optionFormat: "text",
-        totalSubmissions: 0,
-        totalCorrectSubmissions: 0,
-        totalIncorrectSubmissions: 0,
-  
-      },
-      {
-        question: "",
-        options: [
-          { text: "", imageURL: "", selectedCount: 0 },
-          { text: "", imageURL: "", selectedCount: 0 },
-          { text: "", imageURL: "", selectedCount: 0 },
-        ],
-        correctAnswer: null,
-        timer: null,
-        optionFormat: "text",
-        totalCorrectSubmissions: 0,
-        totalIncorrectSubmissions: 0,
-      },)
+      const resetQuestions = questions.map((question) => {
+        const resetOptions = question.options.map((option) => ({
+          text: "",
+          imageURL: "",
+          selectedCount: 0,
+        }));
+
+        return {
+          question: "",
+          options: resetOptions,
+          correctAnswer: null,
+          timer: null,
+          optionFormat: "text",
+          totalSubmissions: 0,
+          totalCorrectSubmissions: 0,
+          totalIncorrectSubmissions: 0,
+        };
+      });
+
+      setQuestions(resetQuestions);
     } else {
       window.alert(response.data.message);
     }
@@ -362,8 +343,6 @@ function Dashboard() {
       console.log(userUpdateResponse.data);
     }
   };
-
-  
 
   const handleCloseQuizPublishedNotification = () => {
     setIsQuizCreatedNotificationOpen(false);
@@ -382,16 +361,15 @@ function Dashboard() {
   };
 
   const handleUserLogout = () => {
-    localStorage.removeItem("token")
-    navigate("/")
-  }
+    localStorage.removeItem("token");
+    navigate("/");
+  };
   const token = localStorage.getItem("token");
 
-  if (!loggedInUser || !token){
+  if (!loggedInUser || !token) {
     navigate("/");
     return null;
   }
-
 
   return (
     <div className="dashboard-page">
@@ -418,7 +396,9 @@ function Dashboard() {
           </p>
         </div>
         <div className="logout-above-stroke"></div>
-        <h2 onClick={handleUserLogout} className="user-logout-button">LOGOUT</h2>
+        <h2 onClick={handleUserLogout} className="user-logout-button">
+          LOGOUT
+        </h2>
       </div>
 
       {isCreateQuizFormOpen && (
@@ -472,7 +452,7 @@ function Dashboard() {
           </div>
         </>
       )}
-      {(isQuestionQuizFormOpen || isPollQuizFormOpen)&& (
+      {(isQuestionQuizFormOpen || isPollQuizFormOpen) && (
         <>
           <div className="overlay">
             <div className="create-question-quiz-form">
@@ -515,10 +495,12 @@ function Dashboard() {
                 </div>
                 <input
                   className="quiz-question-input-div"
-                
-                  placeholder={isQuestionQuizFormOpen ? `Question ${currentQuestionIndex + 1}` : `Poll Question ${currentQuestionIndex + 1}`}
+                  placeholder={
+                    isQuestionQuizFormOpen
+                      ? `Question ${currentQuestionIndex + 1}`
+                      : `Poll Question ${currentQuestionIndex + 1}`
+                  }
                   value={questions[currentQuestionIndex].question}
-
                   type="text"
                   name="question"
                   onChange={(e) =>
@@ -605,32 +587,32 @@ function Dashboard() {
                             key={optionIndex}
                             className="question-options-div"
                           >
-                            {isQuestionQuizFormOpen && ( 
-                            <input
-                              type="radio"
-                              className="options-input-radio-div"
-                              checked={
-                                questions[currentQuestionIndex]
-                                  .correctAnswer === optionIndex
-                              }
-                              onChange={() => {
-                                if (
-                                  (questions[currentQuestionIndex]
-                                    .optionFormat === "text" &&
-                                    option.text === "") ||
-                                  (questions[currentQuestionIndex]
-                                    .optionFormat === "ImageURL" &&
-                                    option.imageURL === "")
-                                ) {
-                                  alert("Please enter your input first");
-                                } else {
-                                  handleSelectCorrectAnswer(
-                                    currentQuestionIndex,
-                                    optionIndex
-                                  );
+                            {isQuestionQuizFormOpen && (
+                              <input
+                                type="radio"
+                                className="options-input-radio-div"
+                                checked={
+                                  questions[currentQuestionIndex]
+                                    .correctAnswer === optionIndex
                                 }
-                              }}
-                            ></input>
+                                onChange={() => {
+                                  if (
+                                    (questions[currentQuestionIndex]
+                                      .optionFormat === "text" &&
+                                      option.text === "") ||
+                                    (questions[currentQuestionIndex]
+                                      .optionFormat === "ImageURL" &&
+                                      option.imageURL === "")
+                                  ) {
+                                    alert("Please enter your input first");
+                                  } else {
+                                    handleSelectCorrectAnswer(
+                                      currentQuestionIndex,
+                                      optionIndex
+                                    );
+                                  }
+                                }}
+                              ></input>
                             )}
                             <input
                               required
@@ -701,29 +683,29 @@ function Dashboard() {
                             className="question-options-div"
                           >
                             {isQuestionQuizFormOpen && (
-                            <input
-                              type="radio"
-                              className="options-input-radio-div"
-                              checked={
-                                questions[currentQuestionIndex]
-                                  .correctAnswer === optionIndex
-                              }
-                              onChange={() => {
-                                if (
-                                  option.text === "" ||
-                                  option.imageURL === ""
-                                ) {
-                                  alert(
-                                    "Please enter both input and image url"
-                                  );
-                                } else {
-                                  handleSelectCorrectAnswer(
-                                    currentQuestionIndex,
-                                    optionIndex
-                                  );
+                              <input
+                                type="radio"
+                                className="options-input-radio-div"
+                                checked={
+                                  questions[currentQuestionIndex]
+                                    .correctAnswer === optionIndex
                                 }
-                              }}
-                            ></input>
+                                onChange={() => {
+                                  if (
+                                    option.text === "" ||
+                                    option.imageURL === ""
+                                  ) {
+                                    alert(
+                                      "Please enter both input and image url"
+                                    );
+                                  } else {
+                                    handleSelectCorrectAnswer(
+                                      currentQuestionIndex,
+                                      optionIndex
+                                    );
+                                  }
+                                }}
+                              ></input>
                             )}
                             <input
                               required
@@ -801,47 +783,47 @@ function Dashboard() {
                   </button>
                 )}
                 {isQuestionQuizFormOpen && (
-                <div className="quiz-each-question-timer">
-                  <p>Timer</p>
-                  <button
-                    className={
-                      questions[currentQuestionIndex].timer === null
-                        ? "active"
-                        : ""
-                    }
-                    onClick={(e) =>
-                      handleQuestionTimerClick(e, currentQuestionIndex, null)
-                    }
-                  >
-                    OFF
-                  </button>
-                  <button
-                    className={
-                      questions[currentQuestionIndex].timer === 5
-                        ? "active"
-                        : ""
-                    }
-                    onClick={(e) =>
-                      handleQuestionTimerClick(e, currentQuestionIndex, 5)
-                    }
-                  >
-                    5 sec
-                  </button>
-                  <button
-                    className={
-                      questions[currentQuestionIndex].timer === 10
-                        ? "active"
-                        : ""
-                    }
-                    onClick={(e) =>
-                      handleQuestionTimerClick(e, currentQuestionIndex, 10)
-                    }
-                  >
-                    10 sec
-                  </button>
-                </div>
+                  <div className="quiz-each-question-timer">
+                    <p>Timer</p>
+                    <button
+                      className={
+                        questions[currentQuestionIndex].timer === null
+                          ? "active"
+                          : ""
+                      }
+                      onClick={(e) =>
+                        handleQuestionTimerClick(e, currentQuestionIndex, null)
+                      }
+                    >
+                      OFF
+                    </button>
+                    <button
+                      className={
+                        questions[currentQuestionIndex].timer === 5
+                          ? "active"
+                          : ""
+                      }
+                      onClick={(e) =>
+                        handleQuestionTimerClick(e, currentQuestionIndex, 5)
+                      }
+                    >
+                      5 sec
+                    </button>
+                    <button
+                      className={
+                        questions[currentQuestionIndex].timer === 10
+                          ? "active"
+                          : ""
+                      }
+                      onClick={(e) =>
+                        handleQuestionTimerClick(e, currentQuestionIndex, 10)
+                      }
+                    >
+                      10 sec
+                    </button>
+                  </div>
                 )}
-                
+
                 <div className="cancel-create-quiz-buttons">
                   <button
                     className="cancel-question-form-button"
