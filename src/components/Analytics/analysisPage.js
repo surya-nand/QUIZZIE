@@ -6,7 +6,7 @@ import deleteSymbol from "./../../Assets/deleteSymbol.png";
 import editSymbol from "./../../Assets/editSymbol.png";
 import shareSymbol from "./../../Assets/shareSymbol.png";
 
-const BASE_URL = "http://localhost:5000";
+const BASE_URL = "https://quizzie-server-jgr1.onrender.com";
 const CLIENT_URL = "http://localhost:3000";
 
 function AnalyticsPage() {

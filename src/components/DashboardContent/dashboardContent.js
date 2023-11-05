@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import "./../DashboardContent/dashboardContent.modules.css";
 import axios from "axios";
 import impressionSymbol from "../../Assets/impressionSymbol.png"
-const BASE_URL = "http://localhost:5000";
+const BASE_URL = "https://quizzie-server-jgr1.onrender.com";
 
 function DashboardContent() {
   const [trendingQuizzes, setTrendingQuizzes] = useState([]);

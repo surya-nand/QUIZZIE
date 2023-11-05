@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import "./../QuizPage/Quizpage.modules.css";
 import cupSymbol from "./../../Assets/cupSymbol.png";
-const BASE_URL = "http://localhost:5000";
+const BASE_URL = "https://quizzie-server-jgr1.onrender.com";
 
 function Quizpage(props) {
   const [invalidLink, setInvalidLink] = useState("");

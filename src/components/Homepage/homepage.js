@@ -3,7 +3,7 @@ import { useState } from "react";
 import axios from "axios";
 import "./../Homepage/homepage.modules.css";
 import { useNavigate, useLocation } from "react-router-dom";
-const BASE_URL = "http://localhost:5000";
+const BASE_URL = "https://quizzie-server-jgr1.onrender.com";
 
 // const [loginActive, setLoginActive] = useState(false);
 

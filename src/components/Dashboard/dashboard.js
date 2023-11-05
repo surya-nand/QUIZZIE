@@ -11,7 +11,7 @@ import AnalyticsPage from "../Analytics/analysisPage";
 
 
 
-const BASE_URL = "http://localhost:5000";
+const BASE_URL = "https://quizzie-server-jgr1.onrender.com";
 const CLIENT_URL = "http://localhost:3000";
 
 function Dashboard() {
