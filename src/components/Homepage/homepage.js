@@ -163,6 +163,7 @@ function Homepage() {
                 <div className="email-input">
                   <p>Email</p>
                   <input
+                    required
                     className="user-email"
                     type="email"
                     name="email"
@@ -173,6 +174,7 @@ function Homepage() {
                 <div className="password-input">
                   <p>Password</p>
                   <input
+                  required
                     className="user-password"
                     type="password"
                     name="password"

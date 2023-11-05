@@ -64,11 +64,10 @@ function Dashboard() {
   };
 
   const handleCloseCreateQuizForm = () => {
-    setQuizName((prevState) => ({
-      ...prevState,
+    setQuizName({
       quizName: "",
       createdDate: "",
-    }));
+    });
     setIsCreateQuizFormOpen(false);
     setIsDashboardContentOpen(true);
   };
@@ -192,8 +191,17 @@ function Dashboard() {
   };
 
   const handleRemoveQuestion = (index) => {
-    const updatedQuestions = [...questions];
+    let updatedQuestions = [...questions];
     updatedQuestions.splice(index, 1);
+    if (currentQuestionIndex === index) {
+      if (currentQuestionIndex === 0) {
+        setCurrentQuestionIndex(0);
+      } else {
+        setCurrentQuestionIndex(currentQuestionIndex - 1);
+      }
+    } else if (currentQuestionIndex > index) {
+      setCurrentQuestionIndex(currentQuestionIndex - 1);
+    }
     setQuestions(updatedQuestions);
   };
 
@@ -249,10 +257,51 @@ function Dashboard() {
     setISQuestionQuizFormOpen(false);
     setIsPollQuizFormOpen(false)
     setIsDashboardContentOpen(true)
+    setQuestions({  
+      question: "",
+      options: [
+        { text: "", imageURL: "",selectedCount: 0 },
+        { text: "", imageURL: "",selectedCount: 0 },
+        { text: "", imageURL: "",selectedCount: 0 },
+      ],
+      correctAnswer: null,
+      timer: null,
+      optionFormat: "text",
+      totalSubmissions: 0,
+      totalCorrectSubmissions: 0,
+      totalIncorrectSubmissions: 0,
+
+    },
+    {
+      question: "",
+      options: [
+        { text: "", imageURL: "", selectedCount: 0 },
+        { text: "", imageURL: "", selectedCount: 0 },
+        { text: "", imageURL: "", selectedCount: 0 },
+      ],
+      correctAnswer: null,
+      timer: null,
+      optionFormat: "text",
+      totalCorrectSubmissions: 0,
+      totalIncorrectSubmissions: 0,
+    },)
+    setQuizName({
+      quizName: "",
+      createdDate: "",
+    });
   };
 
   const handleCreateQuestionQuizFormSubmit = async (e) => {
     e.preventDefault();
+    const isAnyQuestionNotFilled = questions.some(
+      (question) => !question.question || question.question.trim() === ""
+    );
+  
+    if (isAnyQuestionNotFilled) {
+      window.alert("Please fill all the questions before submitting the quiz.");
+      return;
+    }
+
     const quizData = {
       quizName: quizName.quizName,
       createdDate: quizName.createdDate,
@@ -272,6 +321,34 @@ function Dashboard() {
       const quizId = response.data.quizId;
       const quizLink = `${CLIENT_URL}/quiz/${quizId}`;
       setQuizLink(quizLink);
+      setQuestions({  
+        question: "",
+        options: [
+          { text: "", imageURL: "",selectedCount: 0 },
+          { text: "", imageURL: "",selectedCount: 0 },
+          { text: "", imageURL: "",selectedCount: 0 },
+        ],
+        correctAnswer: null,
+        timer: null,
+        optionFormat: "text",
+        totalSubmissions: 0,
+        totalCorrectSubmissions: 0,
+        totalIncorrectSubmissions: 0,
+  
+      },
+      {
+        question: "",
+        options: [
+          { text: "", imageURL: "", selectedCount: 0 },
+          { text: "", imageURL: "", selectedCount: 0 },
+          { text: "", imageURL: "", selectedCount: 0 },
+        ],
+        correctAnswer: null,
+        timer: null,
+        optionFormat: "text",
+        totalCorrectSubmissions: 0,
+        totalIncorrectSubmissions: 0,
+      },)
     } else {
       window.alert(response.data.message);
     }
