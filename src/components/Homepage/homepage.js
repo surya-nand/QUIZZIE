@@ -2,10 +2,9 @@ import React from "react";
 import { useState } from "react";
 import axios from "axios";
 import "./../Homepage/homepage.modules.css";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate} from "react-router-dom";
 const BASE_URL = "https://quizzie-server-jgr1.onrender.com";
 
-// const [loginActive, setLoginActive] = useState(false);
 
 function Homepage() {
   const navigate = useNavigate();

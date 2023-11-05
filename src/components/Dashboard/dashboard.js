@@ -10,7 +10,7 @@ import DashboardContent from "../DashboardContent/dashboardContent";
 import AnalyticsPage from "../Analytics/analysisPage";
 
 const BASE_URL = "https://quizzie-server-jgr1.onrender.com";
-const CLIENT_URL = "http://localhost:3000";
+const CLIENT_URL = "https://suryaanand10-gmail-com-cuvette-evaluation-test-3.vercel.app";
 
 function Dashboard() {
   const location = useLocation();
