@@ -13,6 +13,7 @@ const BASE_URL = "https://quizzie-server-jgr1.onrender.com";
 const CLIENT_URL = "https://suryaanand10-gmail-com-cuvette-evaluation-test-3.vercel.app";
 
 
+
 function Dashboard() {
   const location = useLocation();
   const navigate = useNavigate();
@@ -296,7 +297,7 @@ function Dashboard() {
       quizName: quizName.quizName,
       createdDate: quizName.createdDate,
       questions: questions,
-      impressions: 5000,
+      impressions: 10,
       quizType: isQuestionQuizFormOpen ? "question" : "poll",
     };
 

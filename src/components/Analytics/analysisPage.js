@@ -9,6 +9,7 @@ import shareSymbol from "./../../Assets/shareSymbol.png";
 const BASE_URL = "https://quizzie-server-jgr1.onrender.com";
 const CLIENT_URL = "https://suryaanand10-gmail-com-cuvette-evaluation-test-3.vercel.app";
 
+
 function AnalyticsPage() {
   const [quizData, setQuizData] = useState([]);
   const [analyticsPageOpen, setAnalyticsPageOpen] = useState(true);
