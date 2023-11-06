@@ -8,6 +8,8 @@ import { useNavigate, useLocation } from "react-router";
 import axios from "axios";
 import DashboardContent from "../DashboardContent/dashboardContent";
 import AnalyticsPage from "../Analytics/analysisPage";
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const BASE_URL = "https://quizzie-server-jgr1.onrender.com";
 const CLIENT_URL = "https://suryaanand10-gmail-com-cuvette-evaluation-test-3.vercel.app";
@@ -73,7 +75,7 @@ function Dashboard() {
   const handleSubmitCreateQuizFormInputs = (event) => {
     event.preventDefault();
     if (!isQuizQuestiontype && !isQuizPollType) {
-      window.alert("Select quiz type");
+      toast.error("Select quiz type");
     }
     if (isQuizQuestiontype) {
       setIsCreateQuizFormOpen(false);
@@ -183,7 +185,7 @@ function Dashboard() {
         },
       ]);
     } else {
-      window.alert("Only a max of 5 questions can be created");
+      toast.error("Only a max of 5 questions can be created");
     }
   };
 
@@ -289,7 +291,7 @@ function Dashboard() {
     );
 
     if (isAnyQuestionNotFilled) {
-      window.alert("Please fill all the questions before submitting the quiz.");
+      toast.error("Please fill all the questions before submitting the quiz.");
       return;
     }
 
@@ -333,7 +335,7 @@ function Dashboard() {
 
       setQuestions(resetQuestions);
     } else {
-      window.alert(response.data.message);
+      toast.info(response.data.message);
     }
 
     if (loggedInUser && response.data.message === "Quiz created successfully") {
@@ -354,7 +356,7 @@ function Dashboard() {
   const handleCopyToClipboard = (linkToQuiz) => {
     navigator.clipboard.writeText(linkToQuiz).then(
       () => {
-        window.alert("Link copied to clipboard");
+        toast.success("Link copied to clipboard!");
       },
       (err) => {
         console.error("Failed to copy link to clipboard", err);

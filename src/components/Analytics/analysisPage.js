@@ -1,5 +1,7 @@
 import React from "react";
 import "./analyticsPage.modules.css";
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import axios from "axios";
 import { useState, useEffect } from "react";
 import deleteSymbol from "./../../Assets/deleteSymbol.png";
@@ -28,7 +30,7 @@ function AnalyticsPage() {
   const handleCopyToClipboard = (linkToQuiz) => {
     navigator.clipboard.writeText(linkToQuiz).then(
       () => {
-        window.alert("Link copied to clipboard");
+        toast.success("Link copied to clipboard!");
       },
       (err) => {
         console.error("Failed to copy link to clipboard", err);

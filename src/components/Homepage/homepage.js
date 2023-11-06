@@ -3,6 +3,8 @@ import { useState } from "react";
 import axios from "axios";
 import "./../Homepage/homepage.modules.css";
 import { useNavigate} from "react-router-dom";
+import { toast } from "react-toastify";
+import 'react-toastify/dist/ReactToastify.css';
 const BASE_URL = "https://quizzie-server-jgr1.onrender.com";
 
 
@@ -53,7 +55,7 @@ function Homepage() {
         `${BASE_URL}/api/users/login`,
         loginData
       );
-      window.alert(response.data.message);
+      toast.info(response.data.message);
       if (response.data.message === "Login Successful") {
         localStorage.setItem("token",response.data.token)
         navigate("/dashboard", {
@@ -61,7 +63,6 @@ function Homepage() {
             loggedInUser: response.data.userDetails,
           },
         });
-        console.log(response.data.userDetails)
       }
     } catch (error) {
       console.log(error);
@@ -75,7 +76,7 @@ function Homepage() {
         `${BASE_URL}/api/users/register`,
         registerData
       );
-      window.alert(response.data.message);
+      toast.info(response.data.message);
       if (response.data.message === "Registration Successful. Please Login") {
         setSignupActive(!signupActive);
       }
@@ -136,6 +137,7 @@ function Homepage() {
                     type="password"
                     name="password"
                     value={registerData.password}
+                    minLength={6}
                     onChange={handleRegisterInputChange}
                     required
                   ></input>
