@@ -33,6 +33,7 @@ function AnalyticsPage() {
         toast.success("Link copied to clipboard!");
       },
       (err) => {
+        toast.error("Failed to copy link to clipboard");
         console.error("Failed to copy link to clipboard", err);
       }
     );
@@ -54,11 +55,14 @@ function AnalyticsPage() {
     setDeleteQuizNotification(false);
     setAnalyticsPageOpen(true);
     try {
-      const response = await axios.delete(
+      await axios.delete(
         `${BASE_URL}/api/quizData/${quizToBeDeletedId}`
       );
     } catch (error) {
       console.error("Error deleting quiz:", error);
+    }
+    finally{
+      toast.success("Quiz deleted successfully")
     }
     setQuizToBeDeletedId("");
   };
@@ -137,7 +141,6 @@ function AnalyticsPage() {
                   onClick={() => handleQuestionWiseAnalysisLinkClick(quiz)}
                   className="question-wise-analysis-text"
                 >
-                  {" "}
                   Question wise Analysis
                 </p>
               </div>

@@ -1,3 +1,31 @@
+.quiz-loading-animation {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 2%;
+  color: #041325;
+  font-size: 5vw;
+  overflow: hidden; 
+  white-space: nowrap; 
+}
+
+@keyframes scroll {
+  100% {
+    transform: translateX(100%); 
+  }
+  0% {
+    transform: translateX(-100%); 
+  }
+}
+
+.quiz-loading-animation::after {
+  content: attr(data-content); 
+  animation: scroll 2s linear infinite; 
+  display: inline-block;
+  white-space: nowrap;
+}
+
+
 .quiz-page,
 .congratulations-page,
 .thanks-page {

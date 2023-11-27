@@ -8,8 +8,8 @@ import { useNavigate, useLocation } from "react-router";
 import axios from "axios";
 import DashboardContent from "../DashboardContent/dashboardContent";
 import AnalyticsPage from "../Analytics/analysisPage";
-import { toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const BASE_URL = "https://quizzie-server-jgr1.onrender.com";
 const CLIENT_URL = "https://suryaanand10-gmail-com-cuvette-evaluation-test-3.vercel.app";
@@ -129,7 +129,6 @@ function Dashboard() {
   const handleActiveQuestionClick = (e, index) => {
     e.preventDefault();
     handleActiveQuestion(index);
-    
   };
 
   const handleActiveQuestion = (index) => {
@@ -258,7 +257,7 @@ function Dashboard() {
     setIsDashboardContentOpen(true);
 
     const resetQuestions = questions.map((question) => {
-      const resetOptions = question.options.map((option) => ({
+      const resetOptions = question.options.map(() => ({
         text: "",
         imageURL: "",
         selectedCount: 0,
@@ -276,7 +275,7 @@ function Dashboard() {
       };
     });
 
-    setQuestions(resetQuestions);
+    setQuestions((prevQuestions) => resetQuestions);
 
     setQuizName({
       quizName: "",
@@ -304,7 +303,6 @@ function Dashboard() {
     };
 
     const response = await axios.post(`${BASE_URL}/api/quizData`, quizData);
-    
 
     if (response.data.message === "Quiz created successfully") {
       setIsQuizCreatedNotificationOpen(true);
@@ -340,11 +338,10 @@ function Dashboard() {
 
     if (loggedInUser && response.data.message === "Quiz created successfully") {
       loggedInUser.quizesCreated = [...loggedInUser.quizesCreated, quizData];
-      const userUpdateResponse = await axios.put(
+      await axios.put(
         `${BASE_URL}/api/users/${loggedInUser._id}`,
         loggedInUser
       );
-      
     }
   };
 
@@ -364,16 +361,19 @@ function Dashboard() {
     );
   };
 
-  const handleUserLogout = () => {
-    localStorage.removeItem("token");
-    navigate("/");
-  };
   const token = localStorage.getItem("token");
 
   if (!loggedInUser || !token) {
     navigate("/");
-    return null;
+    return (
+      <div>You don't have access to this page<br/>Please login to continue</div>
+    );
   }
+
+  const handleUserLogout = () => {
+    localStorage.removeItem("token");
+    navigate("/");
+  };
 
   return (
     <div className="dashboard-page">

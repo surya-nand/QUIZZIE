@@ -6,6 +6,7 @@ import { useParams } from "react-router-dom";
 const BASE_URL = "https://quizzie-server-jgr1.onrender.com";
 
 
+
 function Quizpage() {
   const [invalidLink, setInvalidLink] = useState("");
   const { quizId } = useParams();
@@ -37,6 +38,18 @@ function Quizpage() {
     fetchQuizData();
   }, [quizId]);
 
+  const handleNextQuestion = async () => {
+    console.log(selectedOptions)
+    if (currentQuestionIndex === quizDetails.questions.length - 1 && time <= 0) {
+      // If this is the last question and the time has run out
+      submitQuizData();
+    } else {
+      // If the current question is not the last question or the time has not run out
+      setCurrentQuestionIndex((prevIndex) => prevIndex + 1);
+      setTime(0);
+    }
+  };
+
   useEffect(() => {
     let interval;
     if (quizDetails.questions && quizDetails.questions.length > 0) {
@@ -57,36 +70,6 @@ function Quizpage() {
     return () => clearInterval(interval);
   }, [currentQuestionIndex, quizDetails.questions]);
 
-  const validateSelectedOptions = (selectedOptions) => {
-    // Check that all of the selected options are valid options for their respective questions.
-    for (const questionIndex in selectedOptions) {
-      const selectedOptionIndex = selectedOptions[questionIndex];
-      if (selectedOptionIndex !== null) {
-        const question = quizDetails.questions[questionIndex];
-        const validOptions = question.options.map((option, index) => index);
-        if (!validOptions.includes(selectedOptionIndex)) {
-          return false;
-        }
-      }
-    }
-
-    return true;
-  };
-
-  const handleNextQuestion = async () => {
-    const currentQuestion = quizDetails.questions[currentQuestionIndex];
-    if (currentQuestion.timer && time > 0) {
-      // If the current question has a timer and the time is not zero
-      submitQuizData();
-    } else if (currentQuestionIndex === quizDetails.questions.length - 1 && time <= 0) {
-      // If this is the last question and the time has run out
-      submitQuizData();
-    } else {
-      // If the current question is not the last question or the time has not run out
-      setCurrentQuestionIndex((prevIndex) => prevIndex + 1);
-      setTime(0);
-    }
-  };
   
   const submitQuizData = async () => {
     const correctAnswers = Object.keys(selectedOptions).reduce(
@@ -109,20 +92,12 @@ function Quizpage() {
     setShowResults(true);
     setIsQuizPageOpen(false);
   
-    // Validate the selected options.
-    const areSelectedOptionsValid = validateSelectedOptions(selectedOptions);
-    if (!areSelectedOptionsValid) {
-      alert(
-        "Invalid selected options. Please select a valid option for each question."
-      );
-      return;
-    }
-  
+   //changing the object to facilitate server expectations
     const selectedOptionsArray = Object.keys(selectedOptions).map((key) => {
       return { questionIndex: key, optionIndex: selectedOptions[key] };
     });
     try {
-      const response = await axios.post(
+      await axios.post(
         `${BASE_URL}/api/quizData/${quizId}`,
         { selectedOptions: selectedOptionsArray }
       );
@@ -135,14 +110,14 @@ function Quizpage() {
   const handleNextPoll = async() => {
     if (currentQuestionIndex < quizDetails.questions.length - 1) {
       setCurrentQuestionIndex((prevIndex) => prevIndex + 1);
-      setTime(0);
+      
     }
     else{
       const selectedOptionsArray = Object.keys(selectedOptions).map((key) => {
         return { questionIndex: key, optionIndex: selectedOptions[key] };
       });
       try {
-        const response = await axios.post(
+        await axios.post(
           `${BASE_URL}/api/quizData/${quizId}`,
           { selectedOptions: selectedOptionsArray }
         );
@@ -172,7 +147,7 @@ function Quizpage() {
   };
 
   if (loading) {
-    return <div>Loading...</div>;
+    return <div className="quiz-loading-animation" data-content="Loading..."></div>;
   }
 
   if (invalidLink) {
@@ -218,6 +193,7 @@ function Quizpage() {
                       }
                     >
                       {option.text}
+
                     </button>
                   )}
                   {currentQuestion.optionFormat === "ImageURL" && (
