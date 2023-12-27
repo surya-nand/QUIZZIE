@@ -12,10 +12,10 @@ import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 const BASE_URL = "https://quizzie-server-jgr1.onrender.com";
-// const CLIENT_URL =
-//   "https://suryaanand10-gmail-com-cuvette-evaluation-test-3.vercel.app";
+const CLIENT_URL =
+  "https://suryaanand10-gmail-com-cuvette-evaluation-test-3.vercel.app";
 
-const CLIENT_URL = 'http://localhost:3000';
+
 
 
 

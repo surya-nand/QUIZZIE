@@ -10,12 +10,13 @@ import editSymbol from "./../../Assets/editSymbol.png";
 import shareSymbol from "./../../Assets/shareSymbol.png";
 
 const BASE_URL = "https://quizzie-server-jgr1.onrender.com";
-// const CLIENT_URL =
-//   "https://suryaanand10-gmail-com-cuvette-evaluation-test-3.vercel.app";
+const CLIENT_URL =
+  "https://suryaanand10-gmail-com-cuvette-evaluation-test-3.vercel.app";
 
-const CLIENT_URL = 'http://localhost:3000';
+
 
 function AnalyticsPage() {
+
   const navigate = useNavigate();
   const [quizData, setQuizData] = useState([]);
   const [analyticsPageOpen, setAnalyticsPageOpen] = useState(true);
