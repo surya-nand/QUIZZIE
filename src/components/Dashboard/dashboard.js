@@ -297,10 +297,11 @@ function Dashboard() {
       return token;
     };
     checkToken();
+
   }, []);
   
   const token = localStorage.getItem("token");
-  if (!loggedInUser || !token) {
+  if (!token) {
     navigate("/");
     return (
       <div>
