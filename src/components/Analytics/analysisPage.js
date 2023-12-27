@@ -1,18 +1,22 @@
 import React from "react";
 import "./analyticsPage.modules.css";
-import { toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import axios from "axios";
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router";
 import deleteSymbol from "./../../Assets/deleteSymbol.png";
 import editSymbol from "./../../Assets/editSymbol.png";
 import shareSymbol from "./../../Assets/shareSymbol.png";
 
 const BASE_URL = "https://quizzie-server-jgr1.onrender.com";
-const CLIENT_URL = "https://suryaanand10-gmail-com-cuvette-evaluation-test-3.vercel.app";
+// const CLIENT_URL =
+//   "https://suryaanand10-gmail-com-cuvette-evaluation-test-3.vercel.app";
 
+const CLIENT_URL = 'http://localhost:3000';
 
 function AnalyticsPage() {
+  const navigate = useNavigate();
   const [quizData, setQuizData] = useState([]);
   const [analyticsPageOpen, setAnalyticsPageOpen] = useState(true);
   const [questionWiseAnalysisOpen, setQuestionWiseAnalysisOpen] =
@@ -39,6 +43,18 @@ function AnalyticsPage() {
     );
   };
 
+  useEffect(() => {
+    const checkToken = async () => {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        // Token is missing
+        navigate("/");
+        return;
+      }
+    };
+    checkToken();
+  }, []);
+
   const handleShareQuiz = (quiz) => {
     const quizLink = `${CLIENT_URL}/quiz/${quiz._id}`;
     handleCopyToClipboard(quizLink);
@@ -55,14 +71,16 @@ function AnalyticsPage() {
     setDeleteQuizNotification(false);
     setAnalyticsPageOpen(true);
     try {
-      await axios.delete(
-        `${BASE_URL}/api/quizData/${quizToBeDeletedId}`
-      );
+      const token = localStorage.getItem("token");
+      await axios.delete(`${BASE_URL}/api/quizData/${quizToBeDeletedId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
     } catch (error) {
       console.error("Error deleting quiz:", error);
-    }
-    finally{
-      toast.success("Quiz deleted successfully")
+    } finally {
+      toast.success("Quiz deleted successfully");
     }
     setQuizToBeDeletedId("");
   };
@@ -84,10 +102,16 @@ function AnalyticsPage() {
     }
     return number;
   };
+
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get(`${BASE_URL}/api/quizData`);
+        const token = localStorage.getItem("token");
+        const response = await axios.get(`${BASE_URL}/api/quizData`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
         setQuizData(response.data.quizzes);
       } catch (error) {
         console.error("Error fetching quiz data:", error);
@@ -95,6 +119,7 @@ function AnalyticsPage() {
     };
     fetchData();
   }, []);
+
   return (
     <>
       {analyticsPageOpen && (
@@ -184,10 +209,13 @@ function AnalyticsPage() {
                 </div>
               ) : (
                 <div className="options-analysis">
-                  {question.options.map((option,index) => (
-                    <div className="option-analysis-each-block-poll" key={index}>
+                  {question.options.map((option, index) => (
+                    <div
+                      className="option-analysis-each-block-poll"
+                      key={index}
+                    >
                       <h1>{option.selectedCount}</h1>
-                       <p>{`option ${index+1}`}</p>
+                      <p>{`option ${index + 1}`}</p>
                     </div>
                   ))}
                 </div>

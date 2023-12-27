@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useState } from "react";
 import "./../Dashboard/dashboard.modules.css";
 import closeSymbol from "../../Assets/charm_cross.png";
@@ -12,7 +12,10 @@ import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 const BASE_URL = "https://quizzie-server-jgr1.onrender.com";
-const CLIENT_URL = "https://suryaanand10-gmail-com-cuvette-evaluation-test-3.vercel.app";
+// const CLIENT_URL =
+//   "https://suryaanand10-gmail-com-cuvette-evaluation-test-3.vercel.app";
+
+const CLIENT_URL = 'http://localhost:3000';
 
 
 
@@ -283,6 +286,31 @@ function Dashboard() {
     });
   };
 
+  useEffect(() => {
+    const checkToken = async () => {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        // Token is missing
+        navigate("/");
+        return;
+      }
+      return token;
+    };
+    checkToken();
+  }, []);
+  
+  const token = localStorage.getItem("token");
+  if (!loggedInUser || !token) {
+    navigate("/");
+    return (
+      <div>
+        You don't have access to this page
+        <br />
+        Please login to continue
+      </div>
+    );
+  }
+
   const handleCreateQuestionQuizFormSubmit = async (e) => {
     e.preventDefault();
     const isAnyQuestionNotFilled = questions.some(
@@ -301,8 +329,13 @@ function Dashboard() {
       impressions: 10,
       quizType: isQuestionQuizFormOpen ? "question" : "poll",
     };
-
-    const response = await axios.post(`${BASE_URL}/api/quizData`, quizData);
+   
+    const token = localStorage.getItem("token");
+    const response = await axios.post(`${BASE_URL}/api/quizData`, quizData,{
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
+    });
 
     if (response.data.message === "Quiz created successfully") {
       setIsQuizCreatedNotificationOpen(true);
@@ -340,7 +373,11 @@ function Dashboard() {
       loggedInUser.quizesCreated = [...loggedInUser.quizesCreated, quizData];
       await axios.put(
         `${BASE_URL}/api/users/${loggedInUser._id}`,
-        loggedInUser
+        loggedInUser,{
+          headers: {
+            'Authorization': `Bearer ${token}`,
+          },
+        }
       );
     }
   };
@@ -360,15 +397,6 @@ function Dashboard() {
       }
     );
   };
-
-  const token = localStorage.getItem("token");
-
-  if (!loggedInUser || !token) {
-    navigate("/");
-    return (
-      <div>You don't have access to this page<br/>Please login to continue</div>
-    );
-  }
 
   const handleUserLogout = () => {
     localStorage.removeItem("token");
